@@ -20,8 +20,9 @@ export const getUserById = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
+    const {name,age}=req.body;
     // TODO: Implement update user logic
-    res.status(200).json({ message: `Update user ${id}` });
+    res.status(200).json({ message: `Update user of ${id} to ${name} and ${age}` });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

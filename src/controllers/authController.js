@@ -1,7 +1,19 @@
+import bcrypt from "bcrypt";
+import db from "../models/index.js";
+
+const { User } = db;
+
 export const register = async (req, res) => {
   try {
-    // TODO: Implement registration logic
-    res.status(201).json({ message: "User registered successfully" });
+    const { username, email, password } = req.body;
+
+    res
+      .status(201)
+      .json({
+        message: `name:${username},email:${email},password:${password}`,
+      });
+
+    // res.status(201).json({ message:  });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -2,7 +2,6 @@ import "dotenv/config";
 import http from "http";
 import app from "./app.js";
 import sequelize from "./config/db.js";
-
 const PORT = process.env.PORT || 3030;
 const server = http.createServer(app);
 
