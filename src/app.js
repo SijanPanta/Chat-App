@@ -1,5 +1,5 @@
-require("dotenv").config();
-const express = require("express");
+import express from "express";
+import routes from "./routes/index.js";
 
 const app = express();
 app.use(express.json());
@@ -8,4 +8,7 @@ app.get("/health", (req, res) => {
   res.json({ status: "OK" });
 });
 
-module.exports = app;
+// API routes
+app.use("/api", routes);
+
+export default app;
