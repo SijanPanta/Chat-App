@@ -18,13 +18,15 @@ form.addEventListener("submit", async (e) => {
     const data = await response.json();
 
     if (response.ok) {
-      alert("Login successful!");
-      // Store token if returned
+      // Store token and user data
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
-      // Redirect to home or dashboard
-      // window.location.href = '/dashboard.html';
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+      // Redirect to dashboard
+      window.location.href = "/dashboard.html";
     } else {
       alert(data.error || "Login failed");
     }

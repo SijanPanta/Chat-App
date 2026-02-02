@@ -40,16 +40,16 @@ export const register = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ error1: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
 export const login = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const {email, password } = req.body;
     const existingUser = await User.findOne({ where: { email } });
     if (!existingUser) {
-      return res.status(409).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     const isPasswordCorrect = await bcrypt.compare(
@@ -57,7 +57,7 @@ export const login = async (req, res) => {
       existingUser.password_hash,
     );
     if (!isPasswordCorrect) {
-      return res.status(401).json({ message: "Wrong password" });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     const token=generateToken(existingUser.id);
