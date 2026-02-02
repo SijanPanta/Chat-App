@@ -19,11 +19,16 @@ form.addEventListener("submit", async (e) => {
     const data = await response.json();
 
     if (response.ok) {
-      alert("Registration successful! Please login.");
-      window.location.href = "/login.html";
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+      window.location.href = "/dashboard.html";
     } else {
       if (data.details) {
-        // Show validation errors
         const errors = data.details.map((err) => err.message).join("\n");
         alert(errors);
       } else {

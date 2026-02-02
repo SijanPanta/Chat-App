@@ -15,7 +15,6 @@ document.getElementById("userId").textContent = userData.id || "N/A";
 // Logout functionality
 document.getElementById("logoutBtn").addEventListener("click", async () => {
   try {
-    // Call logout endpoint (optional)
     await fetch("/api/auth/logout", {
       method: "POST",
       headers: {
