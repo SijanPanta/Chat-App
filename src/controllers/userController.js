@@ -1,7 +1,9 @@
+import db from "../models/index.js"
+const {User}=db
 export const getAllUsers = async (req, res) => {
   try {
-    // TODO: Implement get all users logic
-    res.status(200).json({ message: "Get all users" });
+    const users=await User.findAll()
+    res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
