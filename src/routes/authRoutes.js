@@ -1,7 +1,7 @@
 import express from "express";
 import * as authController from "../controllers/authController.js";
 import validate from "../middlewares/validate.js";
-import * as schema from "../schemas/register.schema.js";
+import * as schema from "../schemas/schema.js";
 const router = express.Router();
 
 router.post("/register",validate(schema.registerSchema), authController.register);

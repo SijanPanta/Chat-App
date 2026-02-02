@@ -1,7 +1,4 @@
-import jwt from "jsonwebtoken";
-import db from "../models/index.js";
-
-const { User } = db;
+import * as authService from "../services/authService.js";
 
 export const authenticate = async (req, res, next) => {
   try {
@@ -10,11 +7,9 @@ export const authenticate = async (req, res, next) => {
       return res.status(401).json({ error: "Authentication required" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("decoded meg is:",decoded);
-    const user = await User.findByPk(decoded.userId, {
-      attributes: { exclude: ["password_hash"] },
-    });
+    const decoded = authService.verifyToken(token);
+    console.log("decoded meg is:", decoded);
+    const user = await authService.findUserById(decoded.userId);
 
     if (!user) {
       return res.status(401).json({ error: "User not found" });
