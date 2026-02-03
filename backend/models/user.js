@@ -24,6 +24,7 @@ export default (sequelize, DataTypes) => {
         },
       },
       password_hash: DataTypes.STRING,
+      profilePicture: DataTypes.STRING,
     },
     {
       tableName: "users",

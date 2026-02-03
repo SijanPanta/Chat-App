@@ -9,16 +9,32 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
+export const uploadProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    return res.json({ message: "file is uploaded", id });
+  } catch (error) {
+    return res.status(500).json({ err: error.message });
+  }
+};
+
 export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await userService.getUserById(id);
-    
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
+
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
     }
-    
-    res.status(200).json(user);
+    const profilePicturePath = `/uploads/profiles/${req.file.filename}`;
+
+    const updatedUser = await userService.updateUserById(id, {
+      profilePicture: profilePicturePath,
+    });
+
+    res.status(200).json({
+      message: "Profile picture uploaded successfully",
+      user: updatedUser,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -29,3 +29,4 @@ export const deleteUserById = async (userId) => {
   }
   return await user.destroy();
 };
+
