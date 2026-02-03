@@ -2,12 +2,16 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { fetchUser, logout } from "@/lib/api";
+import { useEffect, useState } from "react";
+import { fetchUser, logout, uploadProfilePicture } from "@/lib/api";
 
 export default function Dashboard() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030";
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [uploadedUrl, setUploadedUrl] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -25,7 +29,7 @@ export default function Dashboard() {
     queryFn: fetchUser,
     retry: false,
   });
-
+//   console.log(user);
   useEffect(() => {
     if (error) {
       localStorage.removeItem("token");
@@ -76,6 +80,52 @@ export default function Dashboard() {
               <strong>User ID:</strong> {user?.id}
             </p>
           </div>
+        </div>
+
+        <div className="bg-gray-50 p-6 rounded-lg mb-6">
+          {!user?.profilePicture && (
+            <>
+          <h2 className="text-2xl font-semibold mb-4">
+            Upload Profile Picture
+          </h2>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                if (!file || !user?.id) return;
+                setUploadError("");
+                setUploading(true);
+                try {
+                  const formData = new FormData();
+                  formData.append("profilePicture", file);
+                  const res = await uploadProfilePicture(user.id, formData);
+                  setUploadedUrl(res.url || "");
+                  // Refresh user info
+                  queryClient.invalidateQueries({ queryKey: ["user"] });
+                } catch (err) {
+                    setUploadError(err.message || "Upload failed");
+                } finally {
+                    setUploading(false);
+                }
+            }}
+            />
+            </>
+        )}
+          {uploading && (
+              <p className="text-sm text-gray-600 mt-2">Uploading...</p>
+          )}
+          {uploadError && (
+              <p className="text-sm text-red-600 mt-2">{uploadError}</p>
+          )}
+          {/* Preview uploaded image or fallback to user's saved profilePicture */}
+          {uploadedUrl || user?.profilePicture ? (
+              <img
+              src={uploadedUrl || `${API_URL}${user?.profilePicture}`}
+              alt="Profile"
+              className="mt-4 h-24 w-24 rounded-full object-cover"
+              />
+            ) : null}
         </div>
 
         <div className="flex gap-4">

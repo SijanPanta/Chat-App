@@ -87,6 +87,7 @@ export const getCurrentUser = async (req, res) => {
       id: user.id,
       username: user.username,
       email: user.email,
+      profilePicture: user.profilePicture || null,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
