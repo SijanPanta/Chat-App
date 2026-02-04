@@ -36,7 +36,7 @@ export default function Dashboard() {
     queryFn: fetchUser,
     retry: false,
   });
-  //   console.log(user);
+    console.log(user);
   useEffect(() => {
     if (error) {
       localStorage.removeItem("token");
@@ -117,7 +117,7 @@ export default function Dashboard() {
                 <strong>Email:</strong> {user?.email}
               </p>
               <p>
-                <strong>User ID:</strong> {user?.id}
+                <strong>User ID:</strong> {user?.userId}
               </p>
             </div>
           </div>

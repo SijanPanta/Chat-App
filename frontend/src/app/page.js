@@ -15,9 +15,9 @@ export default function Home() {
     }
   }, [router]);
 
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-xl">Redirecting...</div>
-    </div>
-  );
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Redirecting...</div>
+      </div>
+    );
 }

@@ -4,16 +4,13 @@ export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Check if user exists
     const existingUser = await authService.findUserByEmail(email);
     if (existingUser) {
       return res.status(409).json({ error: "User is already registered" });
     }
 
-    // Create user (service handles hashing)
     const newUser = await authService.createUser(username, email, password);
 
-    // Generate token
     const token = authService.generateToken(newUser.id);
 
     res.status(201).json({
@@ -21,6 +18,7 @@ export const register = async (req, res) => {
       token,
       user: {
         id: newUser.id,
+        userId: newUser.userId,
         username: newUser.username,
         email: newUser.email,
       },
@@ -57,6 +55,7 @@ export const login = async (req, res) => {
       token,
       user: {
         id: user.id,
+        userId: user.userId,
         username: user.username,
         email: user.email,
       },
@@ -85,6 +84,7 @@ export const getCurrentUser = async (req, res) => {
 
     res.status(200).json({
       id: user.id,
+      userId: user.userId,
       username: user.username,
       email: user.email,
       profilePicture: user.profilePicture || null,

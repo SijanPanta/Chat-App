@@ -1,4 +1,5 @@
 import { Model } from "sequelize";
+import { v4 as uuidv4 } from "uuid";
 
 export default (sequelize, DataTypes) => {
   class User extends Model {
@@ -25,6 +26,12 @@ export default (sequelize, DataTypes) => {
       },
       password_hash: DataTypes.STRING,
       profilePicture: DataTypes.STRING,
+      userId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        defaultValue: () => uuidv4(),
+      },
     },
     {
       tableName: "users",
