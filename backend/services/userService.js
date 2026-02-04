@@ -22,6 +22,8 @@ export const updateUserById = async (userId, updateData) => {
   return await user.update(updateData);
 };
 
+
+
 export const deleteUserById = async (userId) => {
   const user = await User.findByPk(userId);
   if (!user) {

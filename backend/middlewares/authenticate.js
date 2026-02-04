@@ -8,7 +8,7 @@ export const authenticate = async (req, res, next) => {
     }
 
     const decoded = authService.verifyToken(token);
-    console.log("decoded meg is:", decoded);
+    // console.log("decoded meg is:", decoded);
     const user = await authService.findUserById(decoded.userId);
 
     if (!user) {

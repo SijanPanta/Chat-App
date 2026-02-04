@@ -38,6 +38,26 @@ export async function uploadProfilePicture(userId, formData) {
   return response.json();
 }
 
+export async function deleteProfile(userId) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_URL}/api/users/${userId}/profile-picture`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Deletion failed");
+  }
+
+  return {success:true};
+}
+
 export async function login(credentials) {
   const response = await fetch(`${API_URL}/api/auth/login`, {
     method: "POST",

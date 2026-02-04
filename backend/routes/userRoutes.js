@@ -12,8 +12,9 @@ router.post(
   upload.single("profilePicture"),
   userController.uploadProfilePicture,
 );
+router.delete(  "/:id/profile-picture",authenticate,userController.deleteProfilePicture)
 router.get("/:id", authenticate, userController.getUserById);
 router.put("/:id", authenticate, userController.updateUser);
-router.delete("/:id", authenticate, userController.deleteUser);
+router.delete("/:id", userController.deleteUser);
 
 export default router;
