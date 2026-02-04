@@ -53,67 +53,67 @@ export const deleteProfilePicture = async (req, res) => {
 export const passwordReset = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
-    
+    console.log(oldPassword, newPassword);
     // Validate input
     if (!oldPassword || !newPassword) {
-      return res.status(400).json({ 
-        error: "Old password and new password are required" 
+      return res.status(400).json({
+        error: "Old password and new password are required",
       });
     }
-    
+
     // Check if passwords are the same
     if (oldPassword === newPassword) {
-      return res.status(400).json({ 
-        error: "New password must be different from old password" 
+      return res.status(400).json({
+        error: "New password must be different from old password",
       });
     }
-    
+
     // Validate password length
     if (newPassword.length < 8) {
-      return res.status(400).json({ 
-        error: "Password must be at least 8 characters" 
+      return res.status(400).json({
+        error: "Password must be at least 8 characters",
       });
     }
-    
-    // Get user - Use userService instead of authService
-    const user = await userService.getUserById(req.user.id);
-    
+
+    // Get user with password_hash - fetch directly from model to include password_hash
+    const { User } = await import("../models/index.js").then((m) => m.default);
+    const user = await User.findByPk(req.user.id);
+
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    
+
     // Verify old password
     const isValidPassword = await authService.comparePassword(
       oldPassword,
-      user.password_hash
+      user.password_hash,
     );
-    
+
     if (!isValidPassword) {
-      return res.status(400).json({ 
-        error: "Current password is incorrect" 
+      return res.status(400).json({
+        error: "Current password is incorrect",
       });
     }
 
     // Hash new password
     const hashedPassword = await authService.hashPassword(newPassword);
-    
+
     // Update password
     await userService.updateUserById(user.id, {
       password_hash: hashedPassword,
     });
-    
+
     // Remove password_hash from response
     const { password_hash, ...userWithoutPassword } = user.toJSON();
-    
-    return res.status(200).json({ 
+
+    return res.status(200).json({
       message: "Password changed successfully",
-      user: userWithoutPassword 
+      user: userWithoutPassword,
     });
-    
   } catch (error) {
     console.error("Password reset error:", error);
-    return res.status(500).json({ 
-      error: "Failed to change password. Please try again." 
+    return res.status(500).json({
+      error: "Failed to change password. Please try again.",
     });
   }
 };

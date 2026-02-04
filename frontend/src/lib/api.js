@@ -71,11 +71,11 @@ export async function login(credentials) {
     },
     body: JSON.stringify(credentials),
   });
-if(!response.ok){
- const error = await response.json(); 
- console.log(error)
-    throw new Error(error.error || "Invalid credentials"); 
-}
+  if (!response.ok) {
+    const error = await response.json();
+    console.log(error);
+    throw new Error(error.error || "Invalid credentials");
+  }
   return response.json();
 }
 
@@ -91,7 +91,6 @@ export async function register(userData) {
   return handleResponse(response);
 }
 
-
 export async function logout() {
   const token = localStorage.getItem("token");
 
@@ -101,4 +100,22 @@ export async function logout() {
       Authorization: `Bearer ${token}`,
     },
   });
+}
+
+export async function changePassword(data) {
+  const token = localStorage.getItem("token");
+
+  try {
+    const response = await fetch(`${API_URL}/api/users/password/reset`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    throw new Error(error.message || "Failed to change password");
+  }
 }
