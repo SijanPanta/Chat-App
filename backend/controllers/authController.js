@@ -73,6 +73,7 @@ export const logout = async (req, res) => {
   }
 };
 
+
 export const getCurrentUser = async (req, res) => {
   try {
     // req.user is set by the authenticate middleware

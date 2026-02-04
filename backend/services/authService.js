@@ -37,6 +37,6 @@ export const findUserByEmail = async (email) => {
 
 export const findUserById = async (userId) => {
   return await User.findByPk(userId, {
-    attributes: { exclude: ["password_hash"] },
+    // attributes: { exclude: ["password_hash"] },
   });
 };

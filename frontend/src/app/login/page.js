@@ -19,11 +19,11 @@ export default function LoginPage() {
     try {
       const data = await login({ email, password });
       console.log(data);
-      
-      if (typeof window !== 'undefined') {
+
+      if (typeof window !== "undefined") {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        
+
         // Verify items were saved
         console.log("Saved token:", localStorage.getItem("token"));
         console.log("Saved user:", localStorage.getItem("user"));
@@ -35,6 +35,10 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleForgot = async () => {
+    
   };
 
   return (
@@ -78,6 +82,12 @@ export default function LoginPage() {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
+          <span
+            className="text-gray-500 hover:underline cursor-pointer"
+            onClick={handleForgot}
+          >
+            Forgot Password ?
+          </span>
         </form>
 
         <p className="mt-4 text-center text-gray-600">

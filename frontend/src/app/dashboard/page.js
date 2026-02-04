@@ -36,7 +36,7 @@ export default function Dashboard() {
     queryFn: fetchUser,
     retry: false,
   });
-    console.log(user);
+  // console.log(user);
   useEffect(() => {
     if (error) {
       localStorage.removeItem("token");
@@ -68,6 +68,10 @@ export default function Dashboard() {
       </div>
     );
   }
+
+const changePassword=()=>{
+  router.push("/password")
+}
 
   const fileUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -120,6 +124,9 @@ export default function Dashboard() {
                 <strong>User ID:</strong> {user?.userId}
               </p>
             </div>
+            <button onClick={changePassword} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+              Change Password
+            </button>
           </div>
 
           <div className="bg-gray-50 p-6 rounded-lg mb-6">
@@ -129,7 +136,6 @@ export default function Dashboard() {
                   className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                   onClick={() => {
                     fileInputRef.current?.click();
-                    console.log("clicked");
                   }}
                 >
                   Add Profile Picture
@@ -143,25 +149,26 @@ export default function Dashboard() {
               <p className="text-sm text-red-600 mt-2">{uploadError}</p>
             )}
             {uploadedUrl || user?.profilePicture ? (
-              <>
+              <div className="flex flex-col gap-2">
                 <img
                   src={uploadedUrl || `${API_URL}${user?.profilePicture}`}
                   alt="Profile"
-                  className="mt-4 h-24 w-24 rounded-full object-cover"
+                  className="mt-4 mx-auto h-24 w-24 rounded-full object-cover"
                 />
+
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  className="bg-blue-500 w-[100%] text-white px-4 py-2 rounded hover:bg-blue-600"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   Upload new
                 </button>
                 <button
                   onClick={deleteProfilePicture}
-                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ml-2"
+                  className="bg-red-500 w-[100%] text-white px-4 py-2 rounded hover:bg-red-600 "
                 >
                   delete
                 </button>
-              </>
+              </div>
             ) : null}
           </div>
         </div>

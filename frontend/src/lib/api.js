@@ -1,19 +1,29 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030";
 
+const handleResponse = async (response) => {
+  if (!response.ok) {
+    // Handle expired token
+    if (response.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || `HTTP ${response.status}`);
+  }
+
+  return response.json();
+};
+
 export async function fetchUser() {
   const token = localStorage.getItem("token");
-
   const response = await fetch(`${API_URL}/api/auth/me`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch user");
-  }
-
-  return response.json();
+  return handleResponse(response);
 }
 
 export async function uploadProfilePicture(userId, formData) {
@@ -30,12 +40,7 @@ export async function uploadProfilePicture(userId, formData) {
     },
   );
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Upload failed");
-  }
-
-  return response.json();
+  return handleResponse(response);
 }
 
 export async function deleteProfile(userId) {
@@ -55,7 +60,7 @@ export async function deleteProfile(userId) {
     throw new Error(error.error || "Deletion failed");
   }
 
-  return {success:true};
+  return { success: true };
 }
 
 export async function login(credentials) {
@@ -66,12 +71,11 @@ export async function login(credentials) {
     },
     body: JSON.stringify(credentials),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Login failed");
-  }
-
+if(!response.ok){
+ const error = await response.json(); 
+ console.log(error)
+    throw new Error(error.error || "Invalid credentials"); 
+}
   return response.json();
 }
 
@@ -84,13 +88,9 @@ export async function register(userData) {
     body: JSON.stringify(userData),
   });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Registration failed");
-  }
-
-  return response.json();
+  return handleResponse(response);
 }
+
 
 export async function logout() {
   const token = localStorage.getItem("token");

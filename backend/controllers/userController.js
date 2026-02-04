@@ -1,4 +1,5 @@
 import * as userService from "../services/userService.js";
+import * as authService from "../services/authService.js";
 import path from "path";
 
 export const getAllUsers = async (req, res) => {
@@ -46,6 +47,74 @@ export const deleteProfilePicture = async (req, res) => {
     res.status(200).json({ message: "profile deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const passwordReset = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    
+    // Validate input
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ 
+        error: "Old password and new password are required" 
+      });
+    }
+    
+    // Check if passwords are the same
+    if (oldPassword === newPassword) {
+      return res.status(400).json({ 
+        error: "New password must be different from old password" 
+      });
+    }
+    
+    // Validate password length
+    if (newPassword.length < 8) {
+      return res.status(400).json({ 
+        error: "Password must be at least 8 characters" 
+      });
+    }
+    
+    // Get user - Use userService instead of authService
+    const user = await userService.getUserById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Verify old password
+    const isValidPassword = await authService.comparePassword(
+      oldPassword,
+      user.password_hash
+    );
+    
+    if (!isValidPassword) {
+      return res.status(400).json({ 
+        error: "Current password is incorrect" 
+      });
+    }
+
+    // Hash new password
+    const hashedPassword = await authService.hashPassword(newPassword);
+    
+    // Update password
+    await userService.updateUserById(user.id, {
+      password_hash: hashedPassword,
+    });
+    
+    // Remove password_hash from response
+    const { password_hash, ...userWithoutPassword } = user.toJSON();
+    
+    return res.status(200).json({ 
+      message: "Password changed successfully",
+      user: userWithoutPassword 
+    });
+    
+  } catch (error) {
+    console.error("Password reset error:", error);
+    return res.status(500).json({ 
+      error: "Failed to change password. Please try again." 
+    });
   }
 };
 

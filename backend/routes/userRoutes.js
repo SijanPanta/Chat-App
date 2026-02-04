@@ -16,5 +16,7 @@ router.delete(  "/:id/profile-picture",authenticate,userController.deleteProfile
 router.get("/:id", authenticate, userController.getUserById);
 router.put("/:id", authenticate, userController.updateUser);
 router.delete("/:id", userController.deleteUser);
+router.post("/password/reset",authenticate, userController.passwordReset);
+
 
 export default router;
