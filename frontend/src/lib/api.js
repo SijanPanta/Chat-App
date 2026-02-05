@@ -74,7 +74,7 @@ export async function login(credentials) {
   if (!response.ok) {
     const error = await response.json();
     console.log(error);
-    throw new Error(error.error || "Invalid credentials");
+    throw new Error(error.error || "Invalid credentials ");
   }
   return response.json();
 }
@@ -107,7 +107,7 @@ export async function changePassword(data) {
 
   try {
     const response = await fetch(`${API_URL}/api/users/password/reset`, {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

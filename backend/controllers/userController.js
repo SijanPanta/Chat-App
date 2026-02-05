@@ -53,27 +53,6 @@ export const deleteProfilePicture = async (req, res) => {
 export const passwordReset = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
-    console.log(oldPassword, newPassword);
-    // Validate input
-    if (!oldPassword || !newPassword) {
-      return res.status(400).json({
-        error: "Old password and new password are required",
-      });
-    }
-
-    // Check if passwords are the same
-    if (oldPassword === newPassword) {
-      return res.status(400).json({
-        error: "New password must be different from old password",
-      });
-    }
-
-    // Validate password length
-    if (newPassword.length < 8) {
-      return res.status(400).json({
-        error: "Password must be at least 8 characters",
-      });
-    }
 
     // Get user with password_hash - fetch directly from model to include password_hash
     const { User } = await import("../models/index.js").then((m) => m.default);
