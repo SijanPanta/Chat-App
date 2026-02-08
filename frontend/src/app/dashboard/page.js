@@ -8,6 +8,8 @@ import {
   fetchUser,
   logout,
   uploadProfilePicture,
+  getUserPosts,
+  createPost,
 } from "@/lib/api";
 
 export default function Dashboard() {
@@ -15,9 +17,11 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030";
   const [uploading, setUploading] = useState(false);
-  // const [profileChange, setProfileChange] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [uploadedUrl, setUploadedUrl] = useState("");
+  const [posts, setPosts] = useState({});
+  const [postData, setPostData] = useState("");
+  const [postInput, setPostInput] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -44,6 +48,23 @@ export default function Dashboard() {
     }
   }, [error, router]);
 
+  useEffect(() => {
+    if (!user?.userId) return;
+
+    const fetchPosts = async () => {
+      try {
+        const myPost = await getUserPosts(user.userId);
+        setPosts(Array.isArray(myPost?.posts) ? myPost.posts : []);
+      } catch (error) {
+        console.error("Error fetching posts:", error.message);
+        setUploadError("Failed to fetch posts. Please try again later.");
+        setPosts([]);
+      }
+    };
+
+    fetchPosts();
+  }, [user?.userId]);
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -57,21 +78,9 @@ export default function Dashboard() {
     }
   };
 
-  if (error) {
-    return null;
-  }
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
-      </div>
-    );
-  }
-
-const changePassword=()=>{
-  router.push("/password")
-}
+  const changePassword = () => {
+    router.push("/password");
+  };
 
   const fileUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -92,6 +101,36 @@ const changePassword=()=>{
     }
   };
 
+  const handleCreatePost = () => {
+    setPostInput(!postInput);
+    setPostData("");
+    setUploadError("");
+  };
+
+  const handleSubmitPost = async () => {
+    if (!postData.trim()) {
+      setUploadError("Post content cannot be empty");
+      return;
+    }
+
+    try {
+      setUploading(true);
+      setUploadError("");
+      await createPost(postData);
+      setPostData("");
+      setPostInput(false);
+
+      // Refresh posts
+      const myPost = await getUserPosts(user.userId);
+      setPosts(Array.isArray(myPost?.posts) ? myPost.posts : []);
+    } catch (error) {
+      console.error("Error creating post:", error.message);
+      setUploadError("Failed to create post. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const deleteProfilePicture = async () => {
     try {
       setUploading(true);
@@ -106,6 +145,19 @@ const changePassword=()=>{
       setUploading(false);
     }
   };
+
+  if (error) {
+    return null;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-8">
@@ -124,7 +176,10 @@ const changePassword=()=>{
                 <strong>User ID:</strong> {user?.userId}
               </p>
             </div>
-            <button onClick={changePassword} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            <button
+              onClick={changePassword}
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
               Change Password
             </button>
           </div>
@@ -180,19 +235,77 @@ const changePassword=()=>{
           onChange={fileUpload}
         />
 
-        <div className="flex gap-4">
-          <button
-            onClick={() => router.push("/chat")}
-            className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
-          >
-            Go to Chat
-          </button>
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600"
-          >
-            Logout
-          </button>
+        <div className="mb-6">
+          <div className="flex gap-4 mb-4">
+            <button
+              onClick={handleCreatePost}
+              className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
+            >
+              {postInput ? "Cancel" : "Create Post"}
+            </button>
+            <button
+              onClick={() => router.push("/chat")}
+              className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+            >
+              Go to Chat
+            </button>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600"
+            >
+              Logout
+            </button>
+          </div>
+
+          {postInput && (
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <textarea
+                value={postData}
+                onChange={(e) => setPostData(e.target.value)}
+                placeholder="What's on your mind?"
+                className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-green-500"
+                rows="3"
+              />
+              <div className="flex gap-2 mt-3">
+                <button
+                  onClick={handleSubmitPost}
+                  disabled={uploading || !postData.trim()}
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  {uploading ? "Posting..." : "Post"}
+                </button>
+                <button
+                  onClick={handleCreatePost}
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-6">
+          <h2 className="text-2xl font-semibold mb-4">Your Posts</h2>
+          <div className="space-y-4">
+            {posts && posts.length > 0 ? (
+              posts.map((post) => (
+                <div
+                  key={post.postId}
+                  className="p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200"
+                >
+                  <p className="text-gray-800">{post.content}</p>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Posted on {new Date(post.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-600 italic">
+                No posts yet. Create your first post!
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

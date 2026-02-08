@@ -1,6 +1,6 @@
 import * as userService from "../services/userService.js";
 import * as authService from "../services/authService.js";
-import path from "path";
+
 
 export const getAllUsers = async (req, res) => {
   try {

@@ -13,7 +13,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Add a response interceptor to handle 401 errors globally
@@ -25,7 +25,7 @@ api.interceptors.response.use(
       window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // Fetch user data
@@ -36,7 +36,10 @@ export async function fetchUser() {
 
 // Upload profile picture
 export async function uploadProfilePicture(userId, formData) {
-  const response = await api.post(`/api/users/${userId}/profile-picture`, formData);
+  const response = await api.post(
+    `/api/users/${userId}/profile-picture`,
+    formData,
+  );
   return response.data;
 }
 
@@ -54,7 +57,6 @@ export async function login(credentials) {
 
 // Register
 export async function register(userData) {
-
   const response = await api.post("/api/auth/register", userData);
   return response.data;
 }
@@ -67,5 +69,16 @@ export async function logout() {
 // Change password
 export async function changePassword(data) {
   const response = await api.put("/api/users/password/reset", data);
+  return response.data;
+}
+
+export async function getUserPosts(userId) {
+  const response = await api.get(`/api/posts/users/${userId}`);
+  // console.log(response.data)
+  return response.data;
+}
+
+export async function createPost(content) {
+  const response = await api.post("/api/posts/", { content });
   return response.data;
 }
