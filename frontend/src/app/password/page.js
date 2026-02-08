@@ -116,7 +116,7 @@ export default function PasswordPage() {
                 </button>
                 <button
                   onClick={() => router.push("/dashboard")}
-                  className="mt-4 flex-1 bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600"
+                  className="mt-4 flex-1 bg-orange-5  00 text-white px-6 py-2 rounded hover:bg-orange-600"
                   >
                   Back to Dashboard
                 </button>

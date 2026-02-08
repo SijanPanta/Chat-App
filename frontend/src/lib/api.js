@@ -1,121 +1,71 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030";
+import axios from "axios";
 
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    // Handle expired token
-    if (response.status === 401) {
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030",
+});
+
+// Add a request interceptor to attach the token to every request
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Add a response interceptor to handle 401 errors globally
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
       localStorage.removeItem("token");
       window.location.href = "/login";
     }
-
-    const error = await response.json();
-    throw new Error(error.error || `HTTP ${response.status}`);
+    return Promise.reject(error);
   }
+);
 
-  return response.json();
-};
-
+// Fetch user data
 export async function fetchUser() {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`${API_URL}/api/auth/me`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  return handleResponse(response);
+  const response = await api.get("/api/auth/me");
+  return response.data;
 }
 
+// Upload profile picture
 export async function uploadProfilePicture(userId, formData) {
-  const token = localStorage.getItem("token");
-
-  const response = await fetch(
-    `${API_URL}/api/users/${userId}/profile-picture`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    },
-  );
-
-  return handleResponse(response);
+  const response = await api.post(`/api/users/${userId}/profile-picture`, formData);
+  return response.data;
 }
 
+// Delete profile picture
 export async function deleteProfile(userId) {
-  const token = localStorage.getItem("token");
-
-  const response = await fetch(
-    `${API_URL}/api/users/${userId}/profile-picture`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  );
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Deletion failed");
-  }
-
+  const response = await api.delete(`/api/users/${userId}/profile-picture`);
   return { success: true };
 }
 
+// Login
 export async function login(credentials) {
-  const response = await fetch(`${API_URL}/api/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(credentials),
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    console.log(error);
-    throw new Error(error.error || "Invalid credentials ");
-  }
-  return response.json();
+  const response = await api.post("/api/auth/login", credentials);
+  return response.data;
 }
 
+// Register
 export async function register(userData) {
-  const response = await fetch(`${API_URL}/api/auth/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userData),
-  });
 
-  return handleResponse(response);
+  const response = await api.post("/api/auth/register", userData);
+  return response.data;
 }
 
+// Logout
 export async function logout() {
-  const token = localStorage.getItem("token");
-
-  await fetch(`${API_URL}/api/auth/logout`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  await api.post("/api/auth/logout");
 }
 
+// Change password
 export async function changePassword(data) {
-  const token = localStorage.getItem("token");
-
-  try {
-    const response = await fetch(`${API_URL}/api/users/password/reset`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    });
-    return handleResponse(response);
-  } catch (error) {
-    throw new Error(error.message || "Failed to change password");
-  }
+  const response = await api.put("/api/users/password/reset", data);
+  return response.data;
 }
