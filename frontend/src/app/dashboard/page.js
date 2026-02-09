@@ -185,6 +185,9 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-8">
         <h1 className="text-3xl font-bold mb-6">Welcome to Chat App! 🎉</h1>
+        {uploadError && (
+              <p className="text-sm text-red-600 mt-2">{uploadError}</p>
+            )}
         <div className=" flex justify-between ">
           <div className="bg-gray-50 p-6 rounded-lg mb-6">
             <h2 className="text-2xl font-semibold mb-4">User Information</h2>
@@ -226,9 +229,7 @@ export default function Dashboard() {
             {uploading && (
               <p className="text-sm text-gray-600 mt-2">Uploading...</p>
             )}
-            {uploadError && (
-              <p className="text-sm text-red-600 mt-2">{uploadError}</p>
-            )}
+            
             {uploadedUrl || user?.profilePicture ? (
               <div className="flex flex-col gap-2">
                 <img
