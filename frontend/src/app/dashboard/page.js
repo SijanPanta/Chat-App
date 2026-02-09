@@ -10,6 +10,7 @@ import {
   uploadProfilePicture,
   getUserPosts,
   createPost,
+  deletePost,
 } from "@/lib/api";
 
 export default function Dashboard() {
@@ -23,6 +24,7 @@ export default function Dashboard() {
   const [postData, setPostData] = useState("");
   const [postInput, setPostInput] = useState(false);
   const fileInputRef = useRef(null);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -40,7 +42,7 @@ export default function Dashboard() {
     queryFn: fetchUser,
     retry: false,
   });
-  // console.log(user);
+
   useEffect(() => {
     if (error) {
       localStorage.removeItem("token");
@@ -84,13 +86,13 @@ export default function Dashboard() {
 
   const fileUpload = async (e) => {
     const file = e.target.files?.[0];
-    if (!file || !user?.id) return;
+    if (!file || !user?.userId) return;
     setUploadError("");
     setUploading(true);
     try {
       const formData = new FormData();
       formData.append("profilePicture", file);
-      const res = await uploadProfilePicture(user.id, formData);
+      const res = await uploadProfilePicture(user.userId, formData);
       setUploadedUrl(res.url || "");
       // Refresh user info
       queryClient.invalidateQueries({ queryKey: ["user"] });
@@ -105,6 +107,11 @@ export default function Dashboard() {
     setPostInput(!postInput);
     setPostData("");
     setUploadError("");
+    if (!postInput) {
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 0);
+    }
   };
 
   const handleSubmitPost = async () => {
@@ -135,7 +142,7 @@ export default function Dashboard() {
     try {
       setUploading(true);
       setUploadError("");
-      await deleteProfile(user.id);
+      await deleteProfile(user.userId);
       setUploadedUrl("");
       // Refresh user info to update UI
       await queryClient.invalidateQueries({ queryKey: ["user"] });
@@ -158,6 +165,22 @@ export default function Dashboard() {
     );
   }
 
+  const handleDeletePost = async (id) => {
+    try {
+      setUploading(true);
+      setUploadError("");
+      await deletePost(id);
+      setUploadedUrl("");
+      const myPost = await getUserPosts(user.userId);
+      setPosts(Array.isArray(myPost?.posts) ? myPost.posts : []);
+    } catch (error) {
+      console.error("Error deleting post:", error.message);
+      setUploadError("Failed to delete post. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-8">
@@ -174,6 +197,9 @@ export default function Dashboard() {
               </p>
               <p>
                 <strong>User ID:</strong> {user?.userId}
+              </p>
+              <p>
+                <strong>Role:</strong> {user?.role}
               </p>
             </div>
             <button
@@ -260,6 +286,7 @@ export default function Dashboard() {
           {postInput && (
             <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
               <textarea
+                ref={textareaRef}
                 value={postData}
                 onChange={(e) => setPostData(e.target.value)}
                 placeholder="What's on your mind?"
@@ -292,12 +319,20 @@ export default function Dashboard() {
               posts.map((post) => (
                 <div
                   key={post.postId}
-                  className="p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200"
+                  className="flex justify-between items-center bg-gray-50 rounded-lg shadow-sm border border-gray-200"
                 >
-                  <p className="text-gray-800">{post.content}</p>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Posted on {new Date(post.createdAt).toLocaleDateString()}
-                  </p>
+                  <div className="p-4 ">
+                    <p className="text-gray-800">{post.content}</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Posted on {new Date(post.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleDeletePost(post.postId)}
+                    className="bg-red-500 mr-2 text-white px-6 py-2 rounded hover:bg-red-600"
+                  >
+                    delete
+                  </button>
                 </div>
               ))
             ) : (

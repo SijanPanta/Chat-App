@@ -2,16 +2,13 @@ import { v4 as uuidv4 } from "uuid";
 
 export async function up(queryInterface, Sequelize) {
   await queryInterface.createTable("users", {
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: Sequelize.INTEGER,
-    },
+    
     userId:{
       type:Sequelize.STRING,
       allowNull:false,
       unique:true,
+      primaryKey: true,
+
       defaultValue:Sequelize.literal`'${uuidv4()}'`
     },
     username: {

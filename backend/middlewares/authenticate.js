@@ -2,6 +2,7 @@ import * as authService from "../services/authService.js";
 
 export const authenticate = async (req, res, next) => {
   try {
+    console.log("inside authenticate")
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
       return res.status(401).json({ error: "Authentication required" });

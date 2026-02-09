@@ -20,6 +20,9 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
+      <head>
+        <link rel='icon' href="/profile.jpg"></link>
+      </head>
       <body>
         <QueryClientProvider client={queryClient}>
           {children}

@@ -10,11 +10,11 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.hasMany(models.Post,{
-        foreignKey:'userId',
-        as:'posts',
-        onDelete:'CASCADE',
-      })
+      User.hasMany(models.Post, {
+        foreignKey: "userId",
+        as: "posts",
+        onDelete: "CASCADE",
+      });
     }
   }
   User.init(
@@ -35,13 +35,20 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+        primaryKey: true,
         defaultValue: () => uuidv4(),
+      },
+      role: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: "USER",
       },
     },
     {
       tableName: "users",
       sequelize,
       modelName: "User",
+      id: false,
     },
   );
   return User;

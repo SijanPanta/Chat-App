@@ -1,9 +1,9 @@
 import * as userService from "../services/userService.js";
 import * as authService from "../services/authService.js";
 
-
 export const getAllUsers = async (req, res) => {
   try {
+    
     const users = await userService.getAllUsers();
     res.status(200).json(users);
   } catch (error) {
@@ -13,8 +13,9 @@ export const getAllUsers = async (req, res) => {
 
 export const uploadProfilePicture = async (req, res) => {
   try {
+    console.log("inside upload")
     const { id } = req.params;
-
+    console.log(id)
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
@@ -54,10 +55,9 @@ export const passwordReset = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
 
-    // Get user with password_hash - fetch directly from model to include password_hash
-    const { User } = await import("../models/index.js").then((m) => m.default);
-    const user = await User.findByPk(req.user.id);
-
+    // Get user with password_hash using userId from JWT token
+    const user = await userService.getUserById(req.user.userId);
+    console.log(user);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -77,8 +77,8 @@ export const passwordReset = async (req, res) => {
     // Hash new password
     const hashedPassword = await authService.hashPassword(newPassword);
 
-    // Update password
-    await userService.updateUserById(user.id, {
+    // Update password using userId
+    await userService.updateUserById(user.userId, {
       password_hash: hashedPassword,
     });
 
@@ -101,8 +101,9 @@ export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
     const user = await userService.getUserById(id);
+    console.log(user);
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: "User fafnot found" });
     }
     return res.status(200).json(user);
   } catch (error) {
@@ -132,6 +133,11 @@ export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
     const user = await userService.getUserById(id);
+    if (!user) {
+      res.status(404).json({ error: "user not found" });
+    }
+
+    // console.log("users"+user)
     await userService.deleteUserById(id);
     res.status(200).json({ message: "User deleted successfully", user });
   } catch (error) {

@@ -11,6 +11,10 @@ server.listen(PORT, async () => {
   try {
     await sequelize.authenticate();
     console.log("Database connected successfully");
+
+    // Alter database schema to match models (safer - won't drop data)
+    // await sequelize.sync({ alter: true });
+    // console.log("Database schema updated successfully");
   } catch (err) {
     console.error("DB connection failed:", err);
   }

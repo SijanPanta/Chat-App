@@ -20,11 +20,17 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Only redirect on 401 if not already on login/register page
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+      const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+      if (currentPath !== '/login' && currentPath !== '/register') {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
     }
-    return Promise.reject(error);
+    // Extract error message from response
+    const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || "An error occurred";
+    return Promise.reject(new Error(errorMessage));
   },
 );
 
@@ -82,3 +88,8 @@ export async function createPost(content) {
   const response = await api.post("/api/posts/", { content });
   return response.data;
 }
+export async function deletePost(postId) {
+  const response = await api.delete(`/api/posts/${postId}`);
+  return response.data;
+}
+

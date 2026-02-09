@@ -9,26 +9,28 @@ export const getAllUsers = async () => {
 };
 
 export const getUserById = async (userId) => {
-  return await User.findByPk(userId, {
-    attributes: { exclude: ["password_hash"] },
+  const user = await User.findOne({
+    where: {
+      userId,
+    },
   });
+  console.log(user);
+  return user;
 };
 
 export const updateUserById = async (userId, updateData) => {
-  const user = await User.findByPk(userId);
+  const user = await User.findOne({ where: { userId } });
   if (!user) {
     throw new Error("User not found");
   }
   return await user.update(updateData);
 };
 
-
-
 export const deleteUserById = async (userId) => {
-  const user = await User.findByPk(userId);
+  console.log("inside delete service");
+  const user = await User.findOne({ where: { userId } });
   if (!user) {
     throw new Error("User not found");
   }
   return await user.destroy();
 };
-

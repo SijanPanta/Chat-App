@@ -22,12 +22,14 @@ export const verifyToken = (token) => {
   return jwt.verify(token, process.env.JWT_SECRET);
 };
 
-export const createUser = async (username, email, password) => {
+export const createUser = async (username, email, password,role) => {
   const hashedPassword = await hashPassword(password);
   return await User.create({
     username,
     email,
     password_hash: hashedPassword,
+    role
+    // role:"USER",
   });
 };
 
