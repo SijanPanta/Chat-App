@@ -25,6 +25,7 @@ export const authorize = (roles) => {
       // Check if user's role is in the allowed roles (case-insensitive)
       const normalizedRoles = allowedRoles.map((role) => role.toLowerCase());
       if (!normalizedRoles.includes(user.role.toLowerCase())) {
+        console.log("Access denied. Insufficient permissions.")
         return res.status(403).json({
           error: "Access denied. Insufficient permissions.",
         });

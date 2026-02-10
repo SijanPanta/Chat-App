@@ -3,7 +3,7 @@ import * as userController from "../controllers/userController.js";
 import { authenticate } from "../middlewares/authenticate.js";
 // import { authenticate } from "../middlewares/authenticate.js";
 import { upload } from "../config/multer.js";
-import validate  from "../middlewares/validate.js";
+import validate from "../middlewares/validate.js";
 import { passwordResetSchema } from "../schemas/schema.js";
 import { authorize } from "../middlewares/authorize.js";
 const router = express.Router();
@@ -11,8 +11,7 @@ const router = express.Router();
 router.get("/", authenticate, userController.getAllUsers);
 router.post(
   "/:id/profile-picture",
-  authenticate, // Ensure user is authenticated first
-  authorize('admin'), // Then check if the user has admin role
+  authenticate, 
   upload.single("profilePicture"),
   userController.uploadProfilePicture,
 );

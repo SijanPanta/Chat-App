@@ -13,9 +13,9 @@ export const getAllUsers = async (req, res) => {
 
 export const uploadProfilePicture = async (req, res) => {
   try {
-    console.log("inside upload")
+    // console.log("inside upload")
     const { id } = req.params;
-    console.log(id)
+    // console.log(id)
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
@@ -57,7 +57,7 @@ export const passwordReset = async (req, res) => {
 
     // Get user with password_hash using userId from JWT token
     const user = await userService.getUserById(req.user.userId);
-    console.log(user);
+    // console.log(user);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -101,7 +101,7 @@ export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
     const user = await userService.getUserById(id);
-    console.log(user);
+    // console.log(user);
     if (!user) {
       return res.status(404).json({ error: "User fafnot found" });
     }

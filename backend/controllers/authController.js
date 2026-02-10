@@ -3,7 +3,7 @@ import * as authService from "../services/authService.js";
 export const register = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
-    console.log(username, email, password, role);
+    // console.log(username, email, password, role);
 
     const existingUser = await authService.findUserByEmail(email);
     if (existingUser) {

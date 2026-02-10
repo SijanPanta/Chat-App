@@ -14,7 +14,7 @@ export const getUserById = async (userId) => {
       userId,
     },
   });
-  console.log(user);
+  // console.log(user);
   return user;
 };
 
@@ -27,7 +27,7 @@ export const updateUserById = async (userId, updateData) => {
 };
 
 export const deleteUserById = async (userId) => {
-  console.log("inside delete service");
+  // console.log("inside delete service");
   const user = await User.findOne({ where: { userId } });
   if (!user) {
     throw new Error("User not found");

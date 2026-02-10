@@ -18,7 +18,7 @@ export default function LoginPage() {
 
     try {
       const data = await login({ email, password });
-      console.log(data);
+      // console.log(data);
 
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.token);
