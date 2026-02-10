@@ -100,3 +100,7 @@ export async function deletePost(postId) {
   return response.data;
 }
 
+export async function getAllPosts() {
+  const response = await api.get(`/api/posts/`);
+  return response.data;
+}

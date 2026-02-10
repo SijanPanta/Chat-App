@@ -9,6 +9,7 @@ import {
   getUserPosts,
   createPost,
   deletePost,
+  getAllPosts,
 } from "@/lib/api";
 
 export function useDashboard() {
@@ -20,9 +21,9 @@ export function useDashboard() {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [uploadedUrl, setUploadedUrl] = useState("");
-  const [posts, setPosts] = useState({});
   const [postData, setPostData] = useState("");
   const [postInput, setPostInput] = useState(false);
+  const [myPost, setMyPost] = useState(true);
 
   // Refs
   const fileInputRef = useRef(null);
@@ -55,24 +56,19 @@ export function useDashboard() {
     }
   }, [error, router]);
 
-  // Fetch posts when user is available
-  useEffect(() => {
-    if (!user?.userId) return;
+  const { data: myPosts = [] } = useQuery({
+    queryKey: ["myPosts", user?.userId], // Unique key for user's posts
+    queryFn: () => getUserPosts(user?.userId),
+    enabled: !!user?.userId, // Only fetch if user ID exists
+    select: (data) => (Array.isArray(data?.posts) ? data.posts : []), // Clean the data
+  });
 
-    const fetchPosts = async () => {
-      try {
-        const myPost = await getUserPosts(user.userId);
-        setPosts(Array.isArray(myPost?.posts) ? myPost.posts : []);
-      } catch (error) {
-        console.error("Error fetching posts:", error.message);
-        setUploadError("Failed to fetch posts. Please try again later.");
-        setPosts([]);
-      }
-    };
-
-    fetchPosts();
-  }, [user?.userId]);
-
+  const { data: allPosts = [] } = useQuery({
+    queryKey: ["allPosts"], // Unique key for all posts
+    queryFn: getAllPosts,
+    select: (data) => (Array.isArray(data?.posts) ? data.posts : []), // Clean the data
+  });
+  // console.log(allPosts);
   // Handlers
   const handleLogout = async () => {
     try {
@@ -113,7 +109,7 @@ export function useDashboard() {
     setPostData("");
     role !== "admin"
       ? (setUploadError("unauthorized"), setPostInput(false))
-      : (setUploadError(""),setPostInput(true));
+      : (setUploadError(""), setPostInput(true));
     if (!postInput) {
       setTimeout(() => {
         textareaRef.current?.focus();
@@ -128,14 +124,21 @@ export function useDashboard() {
     }
 
     try {
+      const postPayload = {
+        content: postData,
+        userName:user.username
+      };
       setUploading(true);
       setUploadError("");
-      await createPost(postData);
+      await createPost(postPayload);
       setPostData("");
       setPostInput(false);
 
-      const myPost = await getUserPosts(user.userId);
-      setPosts(Array.isArray(myPost?.posts) ? myPost.posts : []);
+      // Refetch both myPosts and allPosts after creating new post
+      await queryClient.invalidateQueries({
+        queryKey: ["myPosts", user.userId],
+      });
+      await queryClient.invalidateQueries({ queryKey: ["allPosts"] });
     } catch (error) {
       console.error("Error creating post:", error.message);
       setUploadError("Failed to create post. Please try again.");
@@ -163,12 +166,15 @@ export function useDashboard() {
       setUploading(true);
       setUploadError("");
       await deletePost(id);
-      setUploadedUrl("");
-      const myPost = await getUserPosts(user.userId);
-      setPosts(Array.isArray(myPost?.posts) ? myPost.posts : []);
+
+      // Refetch both myPosts and allPosts after deleting
+      await queryClient.invalidateQueries({
+        queryKey: ["myPosts", user.userId],
+      });
+      await queryClient.invalidateQueries({ queryKey: ["allPosts"] });
     } catch (error) {
       console.error("Error deleting post:", error.message);
-      setUploadError("Failed to delete post. Please try again.");
+      setUploadError(error.message);
     } finally {
       setUploading(false);
     }
@@ -177,12 +183,13 @@ export function useDashboard() {
   return {
     // State
     user,
+    allPosts,
+    myPosts,
     isLoading,
     error,
     uploading,
     uploadError,
     uploadedUrl,
-    posts,
     postData,
     postInput,
     API_URL,
@@ -199,5 +206,7 @@ export function useDashboard() {
     deleteProfilePicture,
     handleDeletePost,
     router,
+    myPost,
+    setMyPost,
   };
 }

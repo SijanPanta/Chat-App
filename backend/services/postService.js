@@ -2,9 +2,10 @@ import db from "../models/index.js";
 
 const { Post } = db;
 
-export const createPost = async (userId, content) => {
+export const createPost = async (userId,userName, content) => {
   return await Post.create({
-    userId, // Assuming req.user contains the authenticated user's info
+    userId, 
+    userName,// Assuming req.user contains the authenticated user's info
     content,
   });
 };

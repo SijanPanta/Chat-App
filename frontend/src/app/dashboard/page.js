@@ -4,17 +4,19 @@ import { useDashboard } from "./hooks/useDashboard";
 import UserInfo from "./components/UserInfo";
 import ProfilePicture from "./components/ProfilePicture";
 import PostInput from "./components/PostInput";
-import PostsList from "./components/PostsList";
+import MyPostsList from "./components/MyPostList";
+import AllPosts from "./components/AllPosts";
 
 export default function Dashboard() {
   const {
     user,
+    allPosts,
     isLoading,
     error,
     uploading,
     uploadError,
     uploadedUrl,
-    posts,
+    myPosts,
     postData,
     postInput,
     API_URL,
@@ -29,8 +31,9 @@ export default function Dashboard() {
     deleteProfilePicture,
     handleDeletePost,
     router,
+    myPost,
+    setMyPost
   } = useDashboard();
-
   if (error) {
     return null;
   }
@@ -104,8 +107,11 @@ export default function Dashboard() {
             textareaRef={textareaRef}
           />
         </div>
-
-        <PostsList posts={posts} handleDeletePost={handleDeletePost} />
+       <button onClick={()=>setMyPost(true)}>My Posts</button>
+       <button onClick={()=>setMyPost(false)}>All Posts</button>
+        {myPost?
+        <MyPostsList posts={myPosts} handleDeletePost={handleDeletePost} />:<AllPosts posts={allPosts}/>
+        }
       </div>
     </div>
   );

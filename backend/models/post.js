@@ -33,6 +33,11 @@ export default (sequelize, DataTypes) => {
           key: "userId",
         },
       },
+      userName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+
       content: DataTypes.TEXT,
       images: DataTypes.JSON,
       likesCount: DataTypes.INTEGER,

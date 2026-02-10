@@ -1,14 +1,25 @@
+import { ConnectionAcquireTimeoutError } from "sequelize";
 import * as postService from "../services/postService.js";
-import * as userService from "../services/userService.js";
-import * as authService from "../services/authService.js";
 
 export const createPost = async (req, res) => {
   try {
+    // Extract content from req.body
     const { content } = req.body;
-    if (!content || content.trim() === "") {
+console.log("===================================",content)
+const postContent=content.content;
+// const userName=content.userName;
+    // Validate content
+    if (!postContent || postContent.trim() === "") {
       return res.status(400).json({ message: "Content cannot be empty" });
     }
-    const newPost = await postService.createPost(req.user.userId, content);
+
+    // Call the service to create the post
+    const newPost = await postService.createPost(
+      req.user.userId,
+      req.user.username,
+      postContent,
+    );
+
     res.status(201).json({
       message: "Post created successfully",
       post: newPost,
@@ -20,7 +31,6 @@ export const createPost = async (req, res) => {
     });
   }
 };
-
 export const getAllPosts = async (req, res) => {
   try {
     const allPosts = await postService.getAllPosts();
@@ -30,7 +40,7 @@ export const getAllPosts = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "couldnot fetch the posts",
-      error: err.message,
+      error: error.message,
     });
   }
 };
@@ -44,18 +54,18 @@ export const getUserPosts = async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({
-      error: err.message,
+      error: error.message,
     });
   }
 };
 
 export const deletePost = async (req, res) => {
   try {
-     const { id } = req.params;
-   const post = await postService.deletePostById(id);
-     res.status(200).json({
+    const { id } = req.params;
+    const post = await postService.deletePostById(id);
+    res.status(200).json({
       message: "Post deleted successfully",
-      post
+      post,
     });
   } catch (error) {
     res.status(404).json({ error: error.message });
