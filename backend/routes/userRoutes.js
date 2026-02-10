@@ -20,8 +20,8 @@ router.delete(
   authenticate,
   userController.deleteProfilePicture,
 );
-router.get("/:id", authenticate, userController.getUserById);
-router.put("/:id", authenticate, userController.updateUser);
+router.get("/:id", userController.getUserById);
+router.put("/:id", userController.updateUser);
 router.delete("/:id", userController.deleteUser);
 router.put(
   "/password/reset",

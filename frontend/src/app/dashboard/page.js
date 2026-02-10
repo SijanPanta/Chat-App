@@ -22,6 +22,10 @@ export default function Dashboard() {
     API_URL,
     fileInputRef,
     textareaRef,
+    allPostsPage,
+    allPostsTotalPages,
+    myPostsTotalPages,
+    myPostsPage,
     handleLogout,
     changePassword,
     fileUpload,
@@ -30,9 +34,11 @@ export default function Dashboard() {
     setPostData,
     deleteProfilePicture,
     handleDeletePost,
+    setMyPostsPage,
+    setAllPostsPage,
     router,
     myPost,
-    setMyPost
+    setMyPost,
   } = useDashboard();
   if (error) {
     return null;
@@ -45,7 +51,6 @@ export default function Dashboard() {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-8">
@@ -70,7 +75,7 @@ export default function Dashboard() {
         <div className="mb-6">
           <div className="flex gap-4 mb-4">
             <button
-              onClick={(e)=>handleCreatePost(user.role)}
+              onClick={(e) => handleCreatePost(user.role)}
               // disabled={user?.role !== "admin"}
               className={`px-6 py-2 rounded ${
                 // user?.role === "admin"
@@ -107,11 +112,24 @@ export default function Dashboard() {
             textareaRef={textareaRef}
           />
         </div>
-       <button onClick={()=>setMyPost(true)}>My Posts</button>
-       <button onClick={()=>setMyPost(false)}>All Posts</button>
-        {myPost?
-        <MyPostsList posts={myPosts} handleDeletePost={handleDeletePost} />:<AllPosts posts={allPosts}/>
-        }
+        <button onClick={() => setMyPost(true)}>My Posts</button>
+        <button onClick={() => setMyPost(false)}>All Posts</button>
+        {myPost ? (
+          <MyPostsList
+            posts={myPosts}
+            handleDeletePost={handleDeletePost}
+            currentPage={myPostsPage}
+            totalPages={myPostsTotalPages}
+            setCurrentPage={setMyPostsPage}
+          />
+        ) : (
+          <AllPosts
+            posts={allPosts}
+            currentPage={allPostsPage}
+            totalPages={allPostsTotalPages}
+            setCurrentPage={setAllPostsPage}
+          />
+        )}
       </div>
     </div>
   );

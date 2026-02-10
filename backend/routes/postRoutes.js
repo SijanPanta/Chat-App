@@ -7,7 +7,7 @@ import * as postController from "../controllers/postController.js";
 
 router.post("/", authenticate,  postController.createPost);
 router.get("/", postController.getAllPosts);
-router.get("/users/:id", authenticate, postController.getUserPosts);
+router.get("/users/:id", postController.getUserPosts);
 router.delete("/:id", authenticate,authorize("admin"), postController.deletePost);
 
 export default router;

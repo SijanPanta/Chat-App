@@ -85,9 +85,8 @@ export async function changePassword(data) {
   return response.data;
 }
 
-export async function getUserPosts(userId) {
-  const response = await api.get(`/api/posts/users/${userId}`);
-  // console.log(response.data)
+export async function getUserPosts(userId, page, limit) {
+  const response = await api.get(`/api/posts/users/${userId}?page=${page}&limit=${limit}`);
   return response.data;
 }
 
@@ -100,7 +99,7 @@ export async function deletePost(postId) {
   return response.data;
 }
 
-export async function getAllPosts() {
-  const response = await api.get(`/api/posts/`);
+export async function getAllPosts(page, limit) {
+  const response = await api.get(`/api/posts/?page=${page}&limit=${limit}`);
   return response.data;
 }

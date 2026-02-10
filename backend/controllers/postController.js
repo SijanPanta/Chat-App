@@ -5,9 +5,8 @@ export const createPost = async (req, res) => {
   try {
     // Extract content from req.body
     const { content } = req.body;
-console.log("===================================",content)
-const postContent=content.content;
-// const userName=content.userName;
+    const postContent = content.content;
+    // const userName=content.userName;
     // Validate content
     if (!postContent || postContent.trim() === "") {
       return res.status(400).json({ message: "Content cannot be empty" });
@@ -33,7 +32,10 @@ const postContent=content.content;
 };
 export const getAllPosts = async (req, res) => {
   try {
-    const allPosts = await postService.getAllPosts();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    const allPosts = await postService.getAllPosts(offset, limit);
     res.status(201).json({
       posts: allPosts,
     });
@@ -47,8 +49,11 @@ export const getAllPosts = async (req, res) => {
 
 export const getUserPosts = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
     const { id } = req.params;
-    const posts = await postService.getUserPosts(id);
+    const posts = await postService.getUserPosts(id, offset, limit);
     res.status(201).json({
       posts,
     });

@@ -25,6 +25,14 @@ export function useDashboard() {
   const [postInput, setPostInput] = useState(false);
   const [myPost, setMyPost] = useState(true);
 
+  // Pagination state for My Posts
+  const [myPostsPage, setMyPostsPage] = useState(1);
+  const [myPostsTotalPages, setMyPostsTotalPages] = useState(1);
+
+  // Pagination state for All Posts
+  const [allPostsPage, setAllPostsPage] = useState(1);
+  const [allPostsTotalPages, setAllPostsTotalPages] = useState(1);
+
   // Refs
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
@@ -57,19 +65,36 @@ export function useDashboard() {
   }, [error, router]);
 
   const { data: myPosts = [] } = useQuery({
-    queryKey: ["myPosts", user?.userId], // Unique key for user's posts
-    queryFn: () => getUserPosts(user?.userId),
-    enabled: !!user?.userId, // Only fetch if user ID exists
-    select: (data) => (Array.isArray(data?.posts) ? data.posts : []), // Clean the data
+    queryKey: ["myPosts", user?.userId, myPostsPage], // Include page in query key
+    queryFn: async () => {
+      const postsPerPage = 5;
+      const response = await getUserPosts(
+        user?.userId,
+        myPostsPage,
+        postsPerPage,
+      );
+      const totalPosts = response.posts.count;
+      setMyPostsTotalPages(Math.ceil(totalPosts / postsPerPage)); // Set total pages for My Posts
+      return response.posts.rows;
+    },
+    enabled: !!user?.userId,
+    keepPreviousData: true, // Keep previous data while fetching new data
   });
 
   const { data: allPosts = [] } = useQuery({
-    queryKey: ["allPosts"], // Unique key for all posts
-    queryFn: getAllPosts,
-    select: (data) => (Array.isArray(data?.posts) ? data.posts : []), // Clean the data
+    queryKey: ["allPosts", allPostsPage], // Include page in query key
+    queryFn: async () => {
+      const postsPerPage = 5;
+      const response = await getAllPosts(allPostsPage, postsPerPage);
+      const totalPosts = response.posts.count;
+      setAllPostsTotalPages(Math.ceil(totalPosts / postsPerPage)); // Set total pages for All Posts
+      return response.posts.rows;
+    },
+    keepPreviousData: true, // Keep previous data while fetching new data
   });
-  // console.log(allPosts);
+
   // Handlers
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -81,6 +106,10 @@ export function useDashboard() {
       queryClient.clear();
       router.push("/login");
     }
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   const changePassword = () => {
@@ -126,7 +155,7 @@ export function useDashboard() {
     try {
       const postPayload = {
         content: postData,
-        userName:user.username
+        userName: user.username,
       };
       setUploading(true);
       setUploadError("");
@@ -193,6 +222,7 @@ export function useDashboard() {
     postData,
     postInput,
     API_URL,
+
     // Refs
     fileInputRef,
     textareaRef,
@@ -205,8 +235,16 @@ export function useDashboard() {
     setPostData,
     deleteProfilePicture,
     handleDeletePost,
+    // handlePageChange,
+    // setCurrentPage,
     router,
     myPost,
     setMyPost,
+    myPostsPage,
+    myPostsTotalPages,
+    allPostsPage,
+    allPostsTotalPages,
+    setMyPostsPage,
+    setAllPostsPage,
   };
 }
