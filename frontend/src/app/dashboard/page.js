@@ -112,8 +112,28 @@ export default function Dashboard() {
             textareaRef={textareaRef}
           />
         </div>
-        <button onClick={() => setMyPost(true)}>My Posts</button>
-        <button onClick={() => setMyPost(false)}>All Posts</button>
+        <div className="flex gap-4 mb-6 border-b border-gray-200">
+          <button
+            onClick={() => setMyPost(true)}
+            className={`px-6 py-3 font-medium transition-colors duration-200 border-b-2 ${
+              myPost
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            My Posts
+          </button>
+          <button
+            onClick={() => setMyPost(false)}
+            className={`px-6 py-3 font-medium transition-colors duration-200 border-b-2 ${
+              !myPost
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            All Posts
+          </button>
+        </div>
         {myPost ? (
           <MyPostsList
             posts={myPosts}
