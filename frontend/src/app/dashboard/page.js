@@ -26,6 +26,7 @@ export default function Dashboard() {
     allPostsTotalPages,
     myPostsTotalPages,
     myPostsPage,
+    selectedCategories,
     handleLogout,
     changePassword,
     fileUpload,
@@ -36,6 +37,7 @@ export default function Dashboard() {
     handleDeletePost,
     setMyPostsPage,
     setAllPostsPage,
+    setSelectedCategories,
     router,
     myPost,
     setMyPost,
@@ -76,12 +78,7 @@ export default function Dashboard() {
           <div className="flex gap-4 mb-4">
             <button
               onClick={(e) => handleCreatePost(user.role)}
-              // disabled={user?.role !== "admin"}
-              className={`px-6 py-2 rounded ${
-                // user?.role === "admin"
-                "bg-green-500 text-white hover:bg-green-600"
-                // : "bg-gray-300 text-gray-500 cursor-not-allowed"
-              }`}
+              className={`px-6 py-2 rounded ${"bg-green-500 text-white hover:bg-green-600"}`}
               title={
                 user?.role !== "admin" ? "Only admins can create posts" : ""
               }
@@ -107,6 +104,8 @@ export default function Dashboard() {
             postData={postData}
             setPostData={setPostData}
             uploading={uploading}
+            setSelectedCategories={setSelectedCategories}
+            selectedCategories={selectedCategories}
             handleSubmitPost={handleSubmitPost}
             handleCreatePost={handleCreatePost}
             textareaRef={textareaRef}

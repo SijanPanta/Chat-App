@@ -3,14 +3,22 @@ import {
   uploadProfilePicture,
   createPost,
   deletePost,
-  deleteProfile
+  deleteProfile,
 } from "@/lib/api";
 
 export function useHandlers(queryClient, user, uiState, router) {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030";
 
   // Extract UI state setters
-  const { setUploading, setUploadError, setUploadedUrl, postData, setPostData, setPostInput } = uiState;
+  const {
+    setUploading,
+    setUploadError,
+    setUploadedUrl,
+    postData,
+    setPostData,
+    setPostInput,
+    selectedCategories
+  } = uiState;
 
   const handleLogout = async () => {
     try {
@@ -55,7 +63,9 @@ export function useHandlers(queryClient, user, uiState, router) {
   };
 
   const handleSubmitPost = async () => {
+   const categoryLable = selectedCategories.map(c => c.label);
     if (!postData.trim()) {
+
       setUploadError("Post content cannot be empty");
       return;
     }
@@ -63,8 +73,9 @@ export function useHandlers(queryClient, user, uiState, router) {
     try {
       const postPayload = {
         content: postData,
-        userName: user.username,
+        categories:categoryLable
       };
+      console.log(postPayload);
       setUploading(true);
       setUploadError("");
       await createPost(postPayload);
@@ -79,6 +90,7 @@ export function useHandlers(queryClient, user, uiState, router) {
       console.error("Error creating post:", error.message);
       setUploadError("Failed to create post. Please try again.");
     } finally {
+      console.log("uploading false")
       setUploading(false);
     }
   };
@@ -123,6 +135,6 @@ export function useHandlers(queryClient, user, uiState, router) {
     handleCreatePost,
     handleSubmitPost,
     deleteProfilePicture,
-    handleDeletePost
+    handleDeletePost,
   };
 }

@@ -24,6 +24,7 @@ export function useDashboard() {
   const handleCreatePost = (role) => {
     uiState.setPostData("");
     if (role !== "admin") {
+      alert("You are not Authorized")
       uiState.setUploadError("unauthorized");
       uiState.setPostInput(false);
     } else {
@@ -51,6 +52,7 @@ export function useDashboard() {
     postData: uiState.postData,
     postInput: uiState.postInput,
     myPost: uiState.myPost,
+    selectedCategories:uiState.selectedCategories,
     
     // Constants
     API_URL,
@@ -68,6 +70,7 @@ export function useDashboard() {
     setPostData: uiState.setPostData,
     deleteProfilePicture: handlers.deleteProfilePicture,
     handleDeletePost: handlers.handleDeletePost,
+    setSelectedCategories:uiState.setSelectedCategories,
     
     // Router
     router,

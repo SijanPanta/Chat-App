@@ -15,6 +15,11 @@ export default (sequelize, DataTypes) => {
         as: "author",
         onDelete: "CASCADE",
       });
+
+      Post.belongsToMany(models.Category, {
+        through: "PostCategories",
+        foreignKey: "postId",
+      });
     }
   }
   Post.init(

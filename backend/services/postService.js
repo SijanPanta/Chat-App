@@ -1,6 +1,6 @@
 import db from "../models/index.js";
 
-const { Post } = db;
+const { Post,Categories } = db;
 
 export const createPost = async (userId, userName, content) => {
   return await Post.create({
@@ -10,11 +10,13 @@ export const createPost = async (userId, userName, content) => {
   });
 };
 
+
 export const getAllPosts = async (offset, limit) => {
   return await Post.findAndCountAll({
     offset,
     limit,
     order: [["createdAt", "DESC"]],
+   
   });
 };
 

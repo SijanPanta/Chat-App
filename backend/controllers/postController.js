@@ -1,29 +1,55 @@
 import { ConnectionAcquireTimeoutError } from "sequelize";
 import * as postService from "../services/postService.js";
+import db from "../models/index.js";
 
+const { Category } = db;
 export const createPost = async (req, res) => {
   try {
-    // Extract content from req.body
+    // Extract content and categories from req.body
     const { content } = req.body;
-    const postContent = content.content;
-    // const userName=content.userName;
-    // Validate content
+    const postContent=content.content;
+    const categories=content.categories;
+    console.log("=====================",categories)
     if (!postContent || postContent.trim() === "") {
       return res.status(400).json({ message: "Content cannot be empty" });
     }
 
-    // Call the service to create the post
+    // Create the post first
     const newPost = await postService.createPost(
       req.user.userId,
       req.user.username,
       postContent,
     );
 
-    res.status(201).json({
-      message: "Post created successfully",
-      post: newPost,
-    });
+    // Handle categories if provided
+    if (categories && Array.isArray(categories) && categories.length > 0) {
+      // Validate and fetch/create categories
+      const categoryInstances = await Promise.all(
+        categories.map(async (catName) => {
+          const [catInstance] = await Category.findOrCreate({
+            where: { name: catName },
+          });
+          return catInstance;
+        }),
+      );
+
+      // Associate the post with the categories
+      await newPost.addCategories(categoryInstances);
+
+      res.status(201).json({
+        message: "Post created successfully",
+        post: newPost,
+        categories: categoryInstances,
+      });
+    } else {
+      // Post created without categories
+      res.status(201).json({
+        message: "Post created successfully",
+        post: newPost,
+      });
+    }
   } catch (err) {
+    console.error("Error creating post:", err.message);
     res.status(500).json({
       message: "Failed to create post",
       error: err.message,
@@ -33,6 +59,7 @@ export const createPost = async (req, res) => {
 export const getAllPosts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
+    // const category = parseInt(req.query.category) || 'tech';
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
     const allPosts = await postService.getAllPosts(offset, limit);

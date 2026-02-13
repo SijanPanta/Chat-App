@@ -1,7 +1,17 @@
+import Select from "react-select";
+
+const options = [
+  { value: 1, label: "Tech" },
+  { value: 2, label: "Economy" },
+  { value: 3, label: "Social" },
+];
+
 export default function PostInput({
   postInput,
   postData,
   setPostData,
+  setSelectedCategories,
+  selectedCategories,
   uploading,
   handleSubmitPost,
   handleCreatePost,
@@ -20,6 +30,14 @@ export default function PostInput({
         rows="3"
       />
       <div className="flex gap-2 mt-3">
+        <Select
+          options={options}
+          isMulti
+          value={selectedCategories}
+          onChange={setSelectedCategories}
+          placeholder="Select categories"
+        />
+
         <button
           onClick={handleSubmitPost}
           disabled={uploading || !postData.trim()}

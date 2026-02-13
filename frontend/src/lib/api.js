@@ -100,6 +100,6 @@ export async function deletePost(postId) {
 }
 
 export async function getAllPosts(page, limit) {
-  const response = await api.get(`/api/posts/?page=${page}&limit=${limit}`);
+  const response = await api.get(`/api/posts/?page=${page}&limit=${limit}&category}`);
   return response.data;
 }

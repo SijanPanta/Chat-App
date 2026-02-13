@@ -7,6 +7,7 @@ export function useUIState() {
   const [postData, setPostData] = useState("");
   const [postInput, setPostInput] = useState(false);
   const [myPost, setMyPost] = useState(true);
+  const [selectedCategories, setSelectedCategories] = useState([]); 
 
   return {
     uploading,
@@ -15,11 +16,13 @@ export function useUIState() {
     postData,
     postInput,
     myPost,
+    selectedCategories,
     setUploading,
     setUploadError,
     setUploadedUrl,
     setPostData,
     setPostInput,
-    setMyPost
+    setMyPost,
+    setSelectedCategories
   };
 }
