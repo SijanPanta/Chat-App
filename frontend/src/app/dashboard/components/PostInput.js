@@ -16,8 +16,18 @@ export default function PostInput({
   handleSubmitPost,
   handleCreatePost,
   textareaRef,
+  postImage,
+  setPostImage,
+  fileInputRef
 }) {
   if (!postInput) return null;
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPostImage(file);
+    }
+  };
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -46,11 +56,26 @@ export default function PostInput({
           {uploading ? "Posting..." : "Post"}
         </button>
         <button
-          onClick={handleCreatePost}
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+          onClick={()=>handleCreatePost('admin')}
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
         >
           Cancel
         </button>
+         <button
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={() => {
+            fileInputRef.current?.click();
+          }}
+        >
+          {postImage ? `📷 ${postImage.name}` : "Add Photo"}
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+        />
       </div>
     </div>
   );

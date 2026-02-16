@@ -16,20 +16,21 @@ export function useDashboard() {
   const pagination = usePagination();
   const refs = useRefs();
   const postData = usePostData(pagination);
-  
+
   // Get handlers with all dependencies
   const handlers = useHandlers(queryClient, postData.user, uiState, router);
 
   // Focus textarea when post input is shown
   const handleCreatePost = (role) => {
+
     uiState.setPostData("");
     if (role !== "admin") {
-      alert("You are not Authorized")
+      alert("You are not Authorized");
       uiState.setUploadError("unauthorized");
       uiState.setPostInput(false);
     } else {
       uiState.setUploadError("");
-      uiState.setPostInput(true);
+      uiState.setPostInput(!uiState.postInput);
       // Focus textarea after state update
       setTimeout(() => {
         refs.textareaRef.current?.focus();
@@ -44,7 +45,7 @@ export function useDashboard() {
     myPosts: postData.myPosts,
     isLoading: postData.isLoading,
     error: postData.error,
-    
+
     // UI State
     uploading: uiState.uploading,
     uploadError: uiState.uploadError,
@@ -52,15 +53,16 @@ export function useDashboard() {
     postData: uiState.postData,
     postInput: uiState.postInput,
     myPost: uiState.myPost,
-    selectedCategories:uiState.selectedCategories,
-    
+    selectedCategories: uiState.selectedCategories,
+    postImage: uiState.postImage,
+
     // Constants
     API_URL,
-    
+
     // Refs
     fileInputRef: refs.fileInputRef,
     textareaRef: refs.textareaRef,
-    
+
     // Handlers
     handleLogout: handlers.handleLogout,
     changePassword: handlers.changePassword,
@@ -70,11 +72,12 @@ export function useDashboard() {
     setPostData: uiState.setPostData,
     deleteProfilePicture: handlers.deleteProfilePicture,
     handleDeletePost: handlers.handleDeletePost,
-    setSelectedCategories:uiState.setSelectedCategories,
-    
+    setSelectedCategories: uiState.setSelectedCategories,
+    setPostImage: uiState.setPostImage,
+
     // Router
     router,
-    
+
     // Pagination
     myPostsPage: pagination.myPostsPage,
     myPostsTotalPages: pagination.myPostsTotalPages,
@@ -82,7 +85,7 @@ export function useDashboard() {
     allPostsTotalPages: pagination.allPostsTotalPages,
     setMyPostsPage: pagination.setMyPostsPage,
     setAllPostsPage: pagination.setAllPostsPage,
-    
+
     // MyPost toggle
     setMyPost: uiState.setMyPost,
   };

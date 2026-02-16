@@ -1,11 +1,9 @@
 import express from "express";
 import * as userController from "../controllers/userController.js";
 import { authenticate } from "../middlewares/authenticate.js";
-// import { authenticate } from "../middlewares/authenticate.js";
 import { upload } from "../config/multer.js";
 import validate from "../middlewares/validate.js";
 import { passwordResetSchema } from "../schemas/schema.js";
-import { authorize } from "../middlewares/authorize.js";
 const router = express.Router();
 
 router.get("/", authenticate, userController.getAllUsers);

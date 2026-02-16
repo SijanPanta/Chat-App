@@ -7,11 +7,22 @@ const __dirname = path.dirname(__filename);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../../uploads/profiles"));
+    // Check if it's a post image or profile picture based on the field name
+    if (file.fieldname === "postImage") {
+      cb(null, path.join(__dirname, "../../uploads/posts"));
+    } else {
+      cb(null, path.join(__dirname, "../../uploads/profiles"));
+    }
   },
   filename: (req, file, cb) => {
-    // One file per user - overwrites old file
-    cb(null, `profile-${req.params.id}${path.extname(file.originalname)}`);
+    // For post images, use timestamp and random string
+    if (file.fieldname === "postImage") {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, `post-${uniqueSuffix}${path.extname(file.originalname)}`);
+    } else {
+      // For profile pictures, one file per user - overwrites old file
+      cb(null, `profile-${req.params.id}${path.extname(file.originalname)}`);
+    }
   },
 });
 

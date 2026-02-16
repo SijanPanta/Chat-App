@@ -1,24 +1,37 @@
-import { ConnectionAcquireTimeoutError } from "sequelize";
 import * as postService from "../services/postService.js";
 import db from "../models/index.js";
 
 const { Category } = db;
 export const createPost = async (req, res) => {
+  let fullUrl=null;
   try {
+    if (req.file) {
+      const postImagePath = `/uploads/posts/${req.file.filename}`;
+       fullUrl = `${req.protocol}://${req.get("host")}${postImagePath}`;
+    }
+    
     // Extract content and categories from req.body
     const { content } = req.body;
-    const postContent=content.content;
-    const categories=content.categories;
-    console.log("=====================",categories)
-    if (!postContent || postContent.trim() === "") {
+    let categories = req.body.categories;
+    
+    // Parse categories if it's a JSON string
+    if (typeof categories === 'string') {
+      try {
+        categories = JSON.parse(categories);
+      } catch (e) {
+        categories = [];
+      }
+    }
+    
+    if (!content || content.trim() === "") {
       return res.status(400).json({ message: "Content cannot be empty" });
     }
-
     // Create the post first
     const newPost = await postService.createPost(
       req.user.userId,
       req.user.username,
-      postContent,
+      content,
+      fullUrl,
     );
 
     // Handle categories if provided
@@ -59,7 +72,6 @@ export const createPost = async (req, res) => {
 export const getAllPosts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    // const category = parseInt(req.query.category) || 'tech';
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
     const allPosts = await postService.getAllPosts(offset, limit);

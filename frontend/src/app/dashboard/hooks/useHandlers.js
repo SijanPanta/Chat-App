@@ -17,7 +17,7 @@ export function useHandlers(queryClient, user, uiState, router) {
     postData,
     setPostData,
     setPostInput,
-    selectedCategories
+    selectedCategories,
   } = uiState;
 
   const handleLogout = async () => {
@@ -46,7 +46,8 @@ export function useHandlers(queryClient, user, uiState, router) {
       const formData = new FormData();
       formData.append("profilePicture", file);
       const res = await uploadProfilePicture(user.userId, formData);
-      setUploadedUrl(res.url || "");
+      const uploadedUrl = res.url || "";
+      setUploadedUrl(uploadedUrl);
       queryClient.invalidateQueries({ queryKey: ["user"] });
     } catch (err) {
       setUploadError(err.message || "Upload failed");
@@ -55,31 +56,32 @@ export function useHandlers(queryClient, user, uiState, router) {
     }
   };
 
-  const handleCreatePost = (role) => {
-    setPostData("");
-    role !== "admin"
-      ? (setUploadError("unauthorized"), setPostInput(false))
-      : (setUploadError(""), setPostInput(true));
-  };
-
   const handleSubmitPost = async () => {
-   const categoryLable = selectedCategories.map(c => c.label);
+    const categoryLabels = selectedCategories.map((c) => c.label);
     if (!postData.trim()) {
-
       setUploadError("Post content cannot be empty");
       return;
     }
 
     try {
-      const postPayload = {
-        content: postData,
-        categories:categoryLable
-      };
-      console.log(postPayload);
       setUploading(true);
       setUploadError("");
-      await createPost(postPayload);
+
+      // Create FormData to send file with post data
+      const formData = new FormData();
+
+      // Add the image file if provided
+      if (uiState.postImage) {
+        formData.append("postImage", uiState.postImage);
+      }
+
+      // Add content and categories as separate fields
+      formData.append("content", postData);
+      formData.append("categories", JSON.stringify(categoryLabels));
+
+      await createPost(formData);
       setPostData("");
+      uiState.setPostImage(null);
       setPostInput(false);
 
       await queryClient.invalidateQueries({
@@ -90,7 +92,6 @@ export function useHandlers(queryClient, user, uiState, router) {
       console.error("Error creating post:", error.message);
       setUploadError("Failed to create post. Please try again.");
     } finally {
-      console.log("uploading false")
       setUploading(false);
     }
   };
@@ -132,7 +133,7 @@ export function useHandlers(queryClient, user, uiState, router) {
     handleLogout,
     changePassword,
     fileUpload,
-    handleCreatePost,
+    // handleCreatePost,
     handleSubmitPost,
     deleteProfilePicture,
     handleDeletePost,

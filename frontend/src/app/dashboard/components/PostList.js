@@ -1,3 +1,6 @@
+import { useState, useEffect } from "react";
+import Select from "react-select";
+
 export default function PostList({
   posts,
   handleDeletePost,
@@ -18,24 +21,63 @@ export default function PostList({
     }
   };
 
+  const handleFilter = () => {
+    if (categories.length === 0) {
+      setFilteredPost(posts);
+    } else {
+      const filteredPost = posts.filter(
+        (post) =>
+          post.Categories &&
+          post.Categories.some((category) =>
+            categories.some((selected) => selected.value === category.id),
+          ),
+      );
+      setFilteredPost(filteredPost);
+    }
+  };
+
+  const options = [
+    { value: 1, label: "Tech" },
+    { value: 2, label: "Economy" },
+    { value: 3, label: "Social" },
+  ];
+
+  const [categories, setCategories] = useState([]);
+  const [filteredPosts, setFilteredPost] = useState(posts);
+  useEffect(() => {
+    setFilteredPost(posts);
+  }, [posts]);
+
   return (
     <div className="mt-8">
       {/* Section Header */}
-      <div className="flex items-center mb-6">
+      <div className="flex gap-2 items-center mb-6">
         <div className="flex-1">
           <h2 className="text-3xl font-bold text-gray-800 mb-1">{title}</h2>
           <p className="text-sm text-gray-500">
-            {posts && posts.length > 0
-              ? `Showing ${posts.length} post${posts.length !== 1 ? "s" : ""}`
+            {filteredPosts && filteredPosts.length > 0
+              ? `Showing ${filteredPosts.length} post${filteredPosts.length !== 1 ? "s" : ""}`
               : "No posts available"}
           </p>
         </div>
+        <Select
+          options={options}
+          isMulti
+          value={categories}
+          onChange={setCategories}
+          placeholder="Select categories"
+        />
+        <button
+          onClick={handleFilter}
+          className="flex-shrink-0 bg-blue-500 text-white px-5 py-2.5 rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-colors duration-200 font-medium shadow-sm hover:shadow-md"
+        >
+          Filter
+        </button>
       </div>
-
       {/* Posts List */}
       <div className="space-y-4">
-        {posts && posts.length > 0 ? (
-          posts.map((post, index) => (
+        {filteredPosts && filteredPosts.length > 0 ? (
+          filteredPosts.map((post, index) => (
             <div
               key={post.postId}
               className="group bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg hover:border-blue-300 transition-all duration-300 overflow-hidden"
@@ -49,11 +91,14 @@ export default function PostList({
                   </p>
 
                   {/* Post Meta Information */}
+                  {post.Categories && post.Categories.length > 0
+                    ? `${post.Categories.map((category) => category.name).join(", ")}`
+                    : ""}
                   <div className="flex items-center gap-4 text-sm text-gray-500">
                     <div className="flex items-center gap-1.5">
                       <span className="text-blue-500">👤</span>
                       <span className="font-medium text-gray-700">
-                        {post.userName}
+                        {post.userName},
                       </span>
                     </div>
                     <span className="text-gray-300">•</span>

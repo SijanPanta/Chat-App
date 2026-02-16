@@ -27,6 +27,7 @@ export default function Dashboard() {
     myPostsTotalPages,
     myPostsPage,
     selectedCategories,
+    postImage,
     handleLogout,
     changePassword,
     fileUpload,
@@ -38,6 +39,7 @@ export default function Dashboard() {
     setMyPostsPage,
     setAllPostsPage,
     setSelectedCategories,
+    setPostImage,
     router,
     myPost,
     setMyPost,
@@ -109,6 +111,9 @@ export default function Dashboard() {
             handleSubmitPost={handleSubmitPost}
             handleCreatePost={handleCreatePost}
             textareaRef={textareaRef}
+            postImage={postImage}
+            setPostImage={setPostImage}
+            fileInputRef={fileInputRef}
           />
         </div>
         <div className="flex gap-4 mb-6 border-b border-gray-200">
