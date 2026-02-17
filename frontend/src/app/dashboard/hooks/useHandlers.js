@@ -4,6 +4,7 @@ import {
   createPost,
   deletePost,
   deleteProfile,
+  toggleLike,
 } from "@/lib/api";
 
 export function useHandlers(queryClient, user, uiState, router) {
@@ -127,6 +128,21 @@ export function useHandlers(queryClient, user, uiState, router) {
       setUploading(false);
     }
   };
+  const handleLikePost = async (postId) => {
+    try {
+      const res = await toggleLike(postId);
+      console.log(res);
+
+      // Refetch posts to get updated isLiked status
+      await queryClient.invalidateQueries({ queryKey: ["allPosts"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["myPosts", user.userId],
+      });
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      setUploadError(error.message);
+    }
+  };
 
   return {
     API_URL,
@@ -137,5 +153,6 @@ export function useHandlers(queryClient, user, uiState, router) {
     handleSubmitPost,
     deleteProfilePicture,
     handleDeletePost,
+    handleLikePost,
   };
 }

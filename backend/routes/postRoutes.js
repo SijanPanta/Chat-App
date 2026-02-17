@@ -13,7 +13,7 @@ router.post(
   postController.createPost,
 );
 router.get("/",authenticate, postController.getAllPosts);
-router.get("/users/:id", postController.getUserPosts);
+router.get("/users/:id", authenticate, postController.getUserPosts);
 router.delete(
   "/:id",
   authenticate,

@@ -1,9 +1,15 @@
 import PostList from "./PostList";
 
-export default function AllPostsList({ posts,handleDeletePost, currentPage, totalPages, setCurrentPage }) {
-  // console.log("allposts++++++++++++++++++++++++=",posts)
+export default function AllPostsList({
+  posts,
+  handleLikePost,
+  currentPage,
+  totalPages,
+  setCurrentPage,
+}) {
   return (
     <PostList
+      handleLikePost={handleLikePost}
       posts={posts}
       title="All Posts"
       currentPage={currentPage}

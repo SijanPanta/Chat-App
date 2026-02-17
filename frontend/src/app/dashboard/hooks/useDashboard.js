@@ -22,7 +22,6 @@ export function useDashboard() {
 
   // Focus textarea when post input is shown
   const handleCreatePost = (role) => {
-
     uiState.setPostData("");
     if (role !== "admin") {
       alert("You are not Authorized");
@@ -74,7 +73,7 @@ export function useDashboard() {
     handleDeletePost: handlers.handleDeletePost,
     setSelectedCategories: uiState.setSelectedCategories,
     setPostImage: uiState.setPostImage,
-
+    handleLikePost: handlers.handleLikePost,
     // Router
     router,
 

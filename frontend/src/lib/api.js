@@ -120,3 +120,8 @@ export async function getAllPosts(page, limit) {
   );
   return response.data;
 }
+
+export async function toggleLike(postId) {
+  const response =await api.post(`/api/posts/${postId}/like`)
+  return response;
+}

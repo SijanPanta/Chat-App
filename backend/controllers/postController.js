@@ -1,6 +1,5 @@
 import * as postService from "../services/postService.js";
 import db from "../models/index.js";
-import user from "../models/user.js";
 
 const { Category, Like } = db;
 export const createPost = async (req, res) => {
@@ -93,7 +92,8 @@ export const getUserPosts = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
     const { id } = req.params;
-    const posts = await postService.getUserPosts(id, offset, limit);
+    const currentUserId = req.user?.userId; // Get current logged-in user
+    const posts = await postService.getUserPosts(id, offset, limit, currentUserId);
     res.status(201).json({
       posts,
     });
@@ -122,7 +122,6 @@ export const toggleLike = async (req, res) => {
     
     const { postId } = req.params;
     const userId = req.user.userId;
-    // console.log('==========================',id,userId)
     const post = await postService.getPostById(postId);
     if (!post) {
       res.status(404).json({ error: "Post not found" });

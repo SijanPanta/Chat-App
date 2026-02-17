@@ -1,9 +1,11 @@
+import { toggleLike } from "@/lib/api";
 import { useState, useEffect } from "react";
 import Select from "react-select";
 
 export default function PostList({
   posts,
   handleDeletePost,
+  handleLikePost,
   title,
   currentPage,
   totalPages,
@@ -41,7 +43,7 @@ export default function PostList({
     { value: 2, label: "Economy" },
     { value: 3, label: "Social" },
   ];
-
+  // console.log('===================',posts)
   const [categories, setCategories] = useState([]);
   const [filteredPosts, setFilteredPost] = useState(posts);
   useEffect(() => {
@@ -94,6 +96,7 @@ export default function PostList({
                   {post.images && (
                     <div className="mt-4">
                       <img
+                      onDoubleClick={()=>handleLikePost(post.postId)}
                         src={post.images}
                         alt={`Post ${post.postId}`}
                         className="w-64 h-64 rounded-lg object-cover"
@@ -130,6 +133,27 @@ export default function PostList({
                         })}
                       </span>
                     </div>
+                  </div>
+
+                  {/* Like Button and Counter */}
+                  <div className="flex items-center gap-3 mt-3">
+                    <button
+                      onClick={() => handleLikePost(post.postId)}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                        post.isLiked
+                          ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      }`}
+                    >
+                      <span className="text-lg">
+                        {post.isLiked ? "❤️" : "🤍"}
+                      </span>
+                      <span>{post.isLiked ? "Liked" : "Like"}</span>
+                    </button>
+                    <span className="text-gray-700 font-semibold">
+                      {post.likesCount || 0}{" "}
+                      {post.likesCount === 1 ? "Like" : "Likes"}
+                    </span>
                   </div>
 
                   {/* Post Categories */}

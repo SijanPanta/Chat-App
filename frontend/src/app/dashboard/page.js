@@ -43,6 +43,7 @@ export default function Dashboard() {
     router,
     myPost,
     setMyPost,
+    handleLikePost,
   } = useDashboard();
   if (error) {
     return null;
@@ -145,6 +146,7 @@ export default function Dashboard() {
             currentPage={myPostsPage}
             totalPages={myPostsTotalPages}
             setCurrentPage={setMyPostsPage}
+            handleLikePost={handleLikePost}
           />
         ) : (
           <AllPosts
@@ -152,6 +154,7 @@ export default function Dashboard() {
             currentPage={allPostsPage}
             totalPages={allPostsTotalPages}
             setCurrentPage={setAllPostsPage}
+            handleLikePost={handleLikePost}
           />
         )}
       </div>

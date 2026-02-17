@@ -1,9 +1,16 @@
 import PostList from "./PostList";
 
-export default function MyPostList({ posts,handleDeletePost, currentPage, totalPages, setCurrentPage }) {
-  // console.log('==============================',posts)
+export default function MyPostList({
+  posts,
+  handleDeletePost,
+  handleLikePost,
+  currentPage,
+  totalPages,
+  setCurrentPage,
+}) {
   return (
     <PostList
+      handleLikePost={handleLikePost}
       posts={posts}
       title="My Posts"
       handleDeletePost={handleDeletePost}
