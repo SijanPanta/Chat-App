@@ -15,6 +15,7 @@ export default (sequelize, DataTypes) => {
         as: "posts",
         onDelete: "CASCADE",
       });
+
     }
   }
   User.init(

@@ -13,7 +13,6 @@ export const getAllUsers = async (req, res) => {
 
 export const uploadProfilePicture = async (req, res) => {
   try {
-    // console.log("inside upload")
     const { id } = req.params;
     // console.log(id)
     if (!req.file) {

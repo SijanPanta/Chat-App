@@ -116,7 +116,7 @@ export async function deletePost(postId) {
 
 export async function getAllPosts(page, limit) {
   const response = await api.get(
-    `/api/posts/?page=${page}&limit=${limit}&category}`,
+    `/api/posts/?page=${page}&limit=${limit}`,
   );
   return response.data;
 }

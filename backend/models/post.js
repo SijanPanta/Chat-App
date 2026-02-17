@@ -20,6 +20,9 @@ export default (sequelize, DataTypes) => {
         through: "PostCategories",
         foreignKey: "postId",
       });
+
+      this.hasMany(models.Like, { foreignKey: "postId", as: "likes" });
+
     }
   }
   Post.init(

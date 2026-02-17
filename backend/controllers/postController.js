@@ -1,28 +1,29 @@
 import * as postService from "../services/postService.js";
 import db from "../models/index.js";
+import user from "../models/user.js";
 
-const { Category } = db;
+const { Category, Like } = db;
 export const createPost = async (req, res) => {
-  let fullUrl=null;
+  let fullUrl = null;
   try {
     if (req.file) {
       const postImagePath = `/uploads/posts/${req.file.filename}`;
-       fullUrl = `${req.protocol}://${req.get("host")}${postImagePath}`;
+      fullUrl = `${req.protocol}://${req.get("host")}${postImagePath}`;
     }
-    
+
     // Extract content and categories from req.body
     const { content } = req.body;
     let categories = req.body.categories;
-    
+
     // Parse categories if it's a JSON string
-    if (typeof categories === 'string') {
+    if (typeof categories === "string") {
       try {
         categories = JSON.parse(categories);
       } catch (e) {
         categories = [];
       }
     }
-    
+
     if (!content || content.trim() === "") {
       return res.status(400).json({ message: "Content cannot be empty" });
     }
@@ -74,7 +75,7 @@ export const getAllPosts = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
-    const allPosts = await postService.getAllPosts(offset, limit);
+    const allPosts = await postService.getAllPosts(offset, limit,req.user.userId);
     res.status(201).json({
       posts: allPosts,
     });
@@ -113,5 +114,30 @@ export const deletePost = async (req, res) => {
     });
   } catch (error) {
     res.status(404).json({ error: error.message });
+  }
+};
+
+export const toggleLike = async (req, res) => {
+  try {
+    
+    const { postId } = req.params;
+    const userId = req.user.userId;
+    // console.log('==========================',id,userId)
+    const post = await postService.getPostById(postId);
+    if (!post) {
+      res.status(404).json({ error: "Post not found" });
+    }
+    const existingLike =await Like.findOne({
+      where: { userId, postId },
+    });
+    if (existingLike) {
+      await existingLike.destroy();
+      res.status(200).json({liked:false, message: "Unliked" });
+    } else {
+      await Like.create({ userId, postId });
+      return res.status(201).json({ liked: true, message: "Liked" });
+    }
+  } catch (error) {
+    return res.status(500).json({error:error.message})
   }
 };

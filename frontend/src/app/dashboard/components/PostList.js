@@ -85,20 +85,28 @@ export default function PostList({
             >
               <div className="flex justify-between items-start p-6">
                 {/* Post Content */}
-                <div className="flex-1 pr-4">
+                <div className="flex-1 pr-4 bg-blue-50">
                   <p className="text-gray-800 text-lg leading-relaxed mb-4">
                     {post.content}
                   </p>
 
+                  {/* Post Image */}
+                  {post.images && (
+                    <div className="mt-4">
+                      <img
+                        src={post.images}
+                        alt={`Post ${post.postId}`}
+                        className="w-64 h-64 rounded-lg object-cover"
+                      />
+                    </div>
+                  )}
+
                   {/* Post Meta Information */}
-                  {post.Categories && post.Categories.length > 0
-                    ? `${post.Categories.map((category) => category.name).join(", ")}`
-                    : ""}
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mt-4">
                     <div className="flex items-center gap-1.5">
                       <span className="text-blue-500">👤</span>
                       <span className="font-medium text-gray-700">
-                        {post.userName},
+                        {post.userName}
                       </span>
                     </div>
                     <span className="text-gray-300">•</span>
@@ -123,6 +131,16 @@ export default function PostList({
                       </span>
                     </div>
                   </div>
+
+                  {/* Post Categories */}
+                  {post.Categories && post.Categories.length > 0 && (
+                    <div className="mt-2 text-sm text-gray-600">
+                      Categories:{" "}
+                      {post.Categories.map((category) => category.name).join(
+                        ", ",
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Delete Button */}

@@ -12,7 +12,7 @@ router.post(
   upload.single("postImage"),
   postController.createPost,
 );
-router.get("/", postController.getAllPosts);
+router.get("/",authenticate, postController.getAllPosts);
 router.get("/users/:id", postController.getUserPosts);
 router.delete(
   "/:id",
@@ -20,5 +20,7 @@ router.delete(
   authorize("admin"),
   postController.deletePost,
 );
+router.post('/:postId/like',authenticate,postController.toggleLike)
+
 
 export default router;
