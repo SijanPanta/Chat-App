@@ -74,7 +74,11 @@ export const getAllPosts = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
-    const allPosts = await postService.getAllPosts(offset, limit,req.user.userId);
+    const allPosts = await postService.getAllPosts(
+      offset,
+      limit,
+      req.user.userId,
+    );
     res.status(201).json({
       posts: allPosts,
     });
@@ -93,7 +97,12 @@ export const getUserPosts = async (req, res) => {
     const offset = (page - 1) * limit;
     const { id } = req.params;
     const currentUserId = req.user?.userId; // Get current logged-in user
-    const posts = await postService.getUserPosts(id, offset, limit, currentUserId);
+    const posts = await postService.getUserPosts(
+      id,
+      offset,
+      limit,
+      currentUserId,
+    );
     res.status(201).json({
       posts,
     });
@@ -119,24 +128,72 @@ export const deletePost = async (req, res) => {
 
 export const toggleLike = async (req, res) => {
   try {
-    
     const { postId } = req.params;
     const userId = req.user.userId;
     const post = await postService.getPostById(postId);
     if (!post) {
       res.status(404).json({ error: "Post not found" });
     }
-    const existingLike =await Like.findOne({
+    const existingLike = await Like.findOne({
       where: { userId, postId },
     });
     if (existingLike) {
       await existingLike.destroy();
-      res.status(200).json({liked:false, message: "Unliked" });
+      res.status(200).json({ liked: false, message: "Unliked" });
     } else {
       await Like.create({ userId, postId });
       return res.status(201).json({ liked: true, message: "Liked" });
     }
   } catch (error) {
-    return res.status(500).json({error:error.message})
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const createComment = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { content } = req.body;
+    const userId = req.user.userId;
+    if (!content || content.trim() === "") {
+      return res.status(400).json({ error: "Content cannot be empty" });
+    }
+    const post = await postService.getPostById(postId);
+
+    if (!post) {
+      return res.status(404).json({ error: "post not found" });
+    }
+    const comment = await postService.createComment(postId, userId, content);
+    return res.status(201).json({ postId, userId, comment });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const getComments = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const comments = await postService.getComments(postId);
+    return res.status(200).json({ comments });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const comment=await postService.getCommentbyId(commentId)
+    if (!comment) {
+      return res.status(404).json({ error: "Comment not found" });
+    }
+    const userId = req.user.userId;
+    const deletedComment = await postService.deleteComment(commentId, userId);
+
+    return res.status(200).json({
+      message: "Post deleted successfully",
+      comment:deletedComment,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 };

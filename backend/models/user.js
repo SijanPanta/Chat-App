@@ -15,7 +15,8 @@ export default (sequelize, DataTypes) => {
         as: "posts",
         onDelete: "CASCADE",
       });
-
+      User.hasMany(models.Comments, { foreignKey: "userId", as: "comments" });
+      User.hasMany(models.Like, { foreignKey: "userId", as: "likes" });
     }
   }
   User.init(

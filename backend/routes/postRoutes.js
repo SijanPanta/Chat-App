@@ -21,6 +21,7 @@ router.delete(
   postController.deletePost,
 );
 router.post('/:postId/like',authenticate,postController.toggleLike)
-
-
+router.post('/comments/:postId',authenticate,postController.createComment)
+router.get('/comments/:postId',authenticate,postController.getComments)
+router.delete('/comments/:commentId',authenticate,postController.deleteComment)
 export default router;

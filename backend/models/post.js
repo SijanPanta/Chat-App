@@ -21,8 +21,8 @@ export default (sequelize, DataTypes) => {
         foreignKey: "postId",
       });
 
-      this.hasMany(models.Like, { foreignKey: "postId", as: "likes" });
-
+      Post.hasMany(models.Like, { foreignKey: "postId", as: "likes" });
+      Post.hasMany(models.Comments, { foreignKey: "postId", as: "comments" });
     }
   }
   Post.init(

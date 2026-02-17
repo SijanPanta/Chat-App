@@ -1,7 +1,7 @@
-import { includes } from "zod";
+import { where } from "sequelize";
 import db from "../models/index.js";
 
-const { Post, Category, Like, sequelize } = db;
+const { User,Post, Category, Like, Comments } = db;
 
 export const createPost = async (userId, userName, content, url) => {
   return await Post.create({
@@ -81,7 +81,9 @@ export const getUserPosts = async (userId, offset, limit, currentUserId) => {
       ...postJson,
       likesCount: likes.length,
       // Check if CURRENT logged-in user liked this post
-      isLiked: likes.some((like) => String(like.userId) === String(currentUserId)),
+      isLiked: likes.some(
+        (like) => String(like.userId) === String(currentUserId),
+      ),
       likes: undefined, // Remove the likes array from response
     };
   });
@@ -112,3 +114,42 @@ export const updatePostById = async (postId, updateData) => {
   }
   return await post.update(updateData);
 };
+
+export const createComment = async (postId, userId, content) => {
+  const comment = await Comments.create({
+    postId,
+    userId,
+    content,
+  });
+  return comment;
+};
+
+export const getComments = async (postId) => {
+  return await Comments.findAll({
+    where: { postId },
+    include: [
+      {
+        model:User,
+        attributes: ["userId", "username"],
+        as:'user'
+      },
+    ],
+     order: [["createdAt", "DESC"]],
+  });
+};
+
+export const getCommentbyId=async(id)=>{
+  return await Comments.findOne({
+    where:{id}
+  })
+}
+
+export const deleteComment=async(id,userId)=>{
+ const comment=await Comments.findOne({
+    where:{userId,id}
+  })
+  if(!comment){
+    throw new Error("Unauthorized"); 
+  }
+  return await comment.destroy();
+}
