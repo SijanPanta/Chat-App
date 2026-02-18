@@ -125,3 +125,8 @@ export async function toggleLike(postId) {
   const response =await api.post(`/api/posts/${postId}/like`)
   return response;
 }
+
+export async function getCommentsbyPost(postId) {
+  const response =await api.get(`/api/posts/comments/${postId}`)
+  return response;
+}

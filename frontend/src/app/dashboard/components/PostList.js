@@ -1,6 +1,6 @@
-import { toggleLike } from "@/lib/api";
 import { useState, useEffect } from "react";
 import Select from "react-select";
+import Post from "./Post";
 
 export default function PostList({
   posts,
@@ -10,6 +10,7 @@ export default function PostList({
   currentPage,
   totalPages,
   setCurrentPage,
+  useComments,
 }) {
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -46,6 +47,7 @@ export default function PostList({
   // console.log('===================',posts)
   const [categories, setCategories] = useState([]);
   const [filteredPosts, setFilteredPost] = useState(posts);
+
   useEffect(() => {
     setFilteredPost(posts);
   }, [posts]);
@@ -80,105 +82,13 @@ export default function PostList({
       <div className="space-y-4">
         {filteredPosts && filteredPosts.length > 0 ? (
           filteredPosts.map((post, index) => (
-            <div
+            <Post
               key={post.postId}
-              className="group bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg hover:border-blue-300 transition-all duration-300 overflow-hidden"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <div className="flex justify-between items-start p-6">
-                {/* Post Content */}
-                <div className="flex-1 pr-4 bg-blue-50">
-                  <p className="text-gray-800 text-lg leading-relaxed mb-4">
-                    {post.content}
-                  </p>
-
-                  {/* Post Image */}
-                  {post.images && (
-                    <div className="mt-4">
-                      <img
-                      onDoubleClick={()=>handleLikePost(post.postId)}
-                        src={post.images}
-                        alt={`Post ${post.postId}`}
-                        className="w-64 h-64 rounded-lg object-cover"
-                      />
-                    </div>
-                  )}
-
-                  {/* Post Meta Information */}
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mt-4">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-blue-500">👤</span>
-                      <span className="font-medium text-gray-700">
-                        {post.userName}
-                      </span>
-                    </div>
-                    <span className="text-gray-300">•</span>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-green-500">📅</span>
-                      <span>
-                        {new Date(post.createdAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
-                    </div>
-                    <span className="text-gray-300">•</span>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-purple-500">🕐</span>
-                      <span>
-                        {new Date(post.createdAt).toLocaleTimeString("en-US", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Like Button and Counter */}
-                  <div className="flex items-center gap-3 mt-3">
-                    <button
-                      onClick={() => handleLikePost(post.postId)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                        post.isLiked
-                          ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md"
-                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                      }`}
-                    >
-                      <span className="text-lg">
-                        {post.isLiked ? "❤️" : "🤍"}
-                      </span>
-                      <span>{post.isLiked ? "Liked" : "Like"}</span>
-                    </button>
-                    <span className="text-gray-700 font-semibold">
-                      {post.likesCount || 0}{" "}
-                      {post.likesCount === 1 ? "Like" : "Likes"}
-                    </span>
-                  </div>
-
-                  {/* Post Categories */}
-                  {post.Categories && post.Categories.length > 0 && (
-                    <div className="mt-2 text-sm text-gray-600">
-                      Categories:{" "}
-                      {post.Categories.map((category) => category.name).join(
-                        ", ",
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* Delete Button */}
-                {handleDeletePost && (
-                  <button
-                    onClick={() => handleDeletePost(post.postId)}
-                    className="flex-shrink-0 bg-red-500 text-white px-5 py-2.5 rounded-lg hover:bg-red-600 active:bg-red-700 transition-colors duration-200 font-medium shadow-sm hover:shadow-md"
-                    title="Delete this post"
-                  >
-                    🗑️ Delete
-                  </button>
-                )}
-              </div>
-            </div>
+              post={post}
+              handleDeletePost={handleDeletePost}
+              handleLikePost={handleLikePost}
+              useComments={useComments}
+            />
           ))
         ) : (
           // Empty State

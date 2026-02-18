@@ -44,6 +44,7 @@ export function useDashboard() {
     myPosts: postData.myPosts,
     isLoading: postData.isLoading,
     error: postData.error,
+    useComments:postData.useComments,
 
     // UI State
     uploading: uiState.uploading,

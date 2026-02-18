@@ -6,9 +6,11 @@ export default function AllPostsList({
   currentPage,
   totalPages,
   setCurrentPage,
+  useComments,
 }) {
   return (
     <PostList
+      useComments={useComments}
       handleLikePost={handleLikePost}
       posts={posts}
       title="All Posts"

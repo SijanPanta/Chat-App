@@ -3,13 +3,19 @@ import {
   fetchUser,
   getUserPosts,
   getAllPosts,
+  getCommentsbyPost,
 } from "@/lib/api";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export function usePostData(pagination) {
   const router = useRouter();
-  const { myPostsPage, allPostsPage, setMyPostsTotalPages, setAllPostsTotalPages } = pagination;
+  const {
+    myPostsPage,
+    allPostsPage,
+    setMyPostsTotalPages,
+    setAllPostsTotalPages,
+  } = pagination;
 
   // Check authentication
   useEffect(() => {
@@ -29,7 +35,18 @@ export function usePostData(pagination) {
     queryFn: fetchUser,
     retry: false,
   });
-
+  const useComments = (postId) => {
+    return useQuery({
+      queryKey: ["comments", postId],
+      queryFn: async () => {
+        const res = await getCommentsbyPost(postId);
+        return res.data.comments || res.data;
+      },
+      enabled: !!postId,
+      retry: false,
+    });
+  };
+  //fetch comments
   // Handle authentication errors
   useEffect(() => {
     if (error) {
@@ -54,7 +71,6 @@ export function usePostData(pagination) {
     enabled: !!user?.userId,
     keepPreviousData: true,
   });
-
   const { data: allPosts = [] } = useQuery({
     queryKey: ["allPosts", allPostsPage],
     queryFn: async () => {
@@ -73,5 +89,6 @@ export function usePostData(pagination) {
     error,
     myPosts,
     allPosts,
+    useComments,
   };
 }

@@ -7,10 +7,12 @@ export default function MyPostList({
   currentPage,
   totalPages,
   setCurrentPage,
+  useComments
 }) {
   return (
     <PostList
       handleLikePost={handleLikePost}
+      useComments={useComments}
       posts={posts}
       title="My Posts"
       handleDeletePost={handleDeletePost}
