@@ -1,14 +1,17 @@
 import { useState } from "react";
 
 export default function Post({
+  user,
   post,
   handleDeletePost,
   handleLikePost,
   useComments,
+  usePostComment,
+  deleteComment
 }) {
   const [showComments, setShowComments] = useState(false);
+  const [comment, setComment] = useState("");
   const { data: comments, isLoading } = useComments(post.postId);
-
   const toggleComments = () => {
     setShowComments(!showComments);
   };
@@ -94,6 +97,24 @@ export default function Post({
           {/* Comments Section */}
           {showComments && (
             <div className="mt-4 border-t border-gray-200 pt-4">
+              <input
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                type="text"
+                placeholder={`Add your comment as ${user.username}`}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <button
+                onClick={() => {
+                  usePostComment(post.postId, comment);
+                  setComment("");
+                }}
+                className="mt-2 mb-4 flex items-center gap-2 px-4 py-2 rounded-lg font-medium bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                <span className="text-lg">💬</span>
+                <span>Post Comment</span>
+              </button>
+
               <h4 className="text-lg font-semibold text-gray-800 mb-3">
                 Comments
               </h4>
@@ -124,6 +145,14 @@ export default function Post({
                           </div>
                           <p className="text-gray-700">{comment.content}</p>
                         </div>
+                        {(user.username === comment.user?.username||post.userName===user.username) && (
+                          <button
+                            onClick={()=>deleteComment(comment.id,post.postId)}
+                            className="bg-red-800 text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-red-900 transition-colors duration-200">
+                            🗑️ Delete
+                          </button>
+                        )}
+
                       </div>
                     </div>
                   ))}

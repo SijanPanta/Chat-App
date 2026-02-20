@@ -1,7 +1,8 @@
 import { where } from "sequelize";
 import db from "../models/index.js";
+import { includes } from "zod";
 
-const { User,Post, Category, Like, Comments } = db;
+const { User, Post, Category, Like, Comments } = db;
 
 export const createPost = async (userId, userName, content, url) => {
   return await Post.create({
@@ -129,27 +130,40 @@ export const getComments = async (postId) => {
     where: { postId },
     include: [
       {
-        model:User,
+        model: User,
         attributes: ["userId", "username"],
-        as:'user'
+        as: "user",
       },
     ],
-     order: [["createdAt", "DESC"]],
+    order: [["createdAt", "DESC"]],
   });
 };
 
-export const getCommentbyId=async(id)=>{
+export const getCommentbyId = async (id) => {
   return await Comments.findOne({
-    where:{id}
-  })
-}
+    where: { id },
+  });
+};
 
-export const deleteComment=async(id,userId)=>{
- const comment=await Comments.findOne({
-    where:{userId,id}
-  })
-  if(!comment){
-    throw new Error("Unauthorized"); 
+export const deleteComment = async (id, userId, postId) => {
+  const comment = await Comments.findOne({
+    where: { id },
+    include: [
+      {
+        model: Post,
+        attributes: ["postId", "userId"],
+      },
+    ],
+  });
+  if (!comment) {
+    throw new Error("Comment not found");
+  }
+  const isCommentAuthor = comment.userId === userId;
+  const isPostOwner = comment.Post && comment.Post.userId === userId;
+  if (!isCommentAuthor && !isPostOwner) {
+    throw new Error(
+      "Unauthorized: You can only delete your own comments or comments on your posts",
+    );
   }
   return await comment.destroy();
-}
+};

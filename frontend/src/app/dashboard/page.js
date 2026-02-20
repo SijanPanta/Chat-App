@@ -45,6 +45,8 @@ export default function Dashboard() {
     setMyPost,
     handleLikePost,
     useComments,
+    usePostComment,
+    deleteComment
   } = useDashboard();
   if (error) {
     return null;
@@ -142,22 +144,28 @@ export default function Dashboard() {
         </div>
         {myPost ? (
           <MyPostsList
+            user={user}
             posts={myPosts}
+            usePostComment={usePostComment}
             useComments={useComments}
             handleDeletePost={handleDeletePost}
             currentPage={myPostsPage}
             totalPages={myPostsTotalPages}
             setCurrentPage={setMyPostsPage}
             handleLikePost={handleLikePost}
+            deleteComment={deleteComment}
           />
         ) : (
           <AllPosts
+            user={user}
             posts={allPosts}
+            usePostComment={usePostComment}
             useComments={useComments}
             currentPage={allPostsPage}
             totalPages={allPostsTotalPages}
             setCurrentPage={setAllPostsPage}
             handleLikePost={handleLikePost}
+            deleteComment={deleteComment}
           />
         )}
       </div>

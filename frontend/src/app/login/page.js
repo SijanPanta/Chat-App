@@ -65,14 +65,29 @@ export default function LoginPage() {
           </div>
 
           <div className="mb-6">
-            <label className="block text-gray-700 mb-2">Password</label>
+            <label className="block text-gray-700 mb-2 " id='password-input'>Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-base [&::-webkit-credentials-auto-fill-button]:hidden"
+              style={{ fontSize: "1rem", letterSpacing: "0.1em" }}
               required
             />
+            <button
+              type="button"
+              onClick={() => {
+                const passwordInput = document.querySelector('input[type="password"], input[type="text"]');
+                if (passwordInput) {
+                  passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+                }
+              }}
+              className="text-sm text-blue-500 hover:underline mt-1"
+            >
+              Show Password
+            </button>
+
+
           </div>
 
           <button

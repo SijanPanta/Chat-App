@@ -79,7 +79,7 @@ export const getAllPosts = async (req, res) => {
       limit,
       req.user.userId,
     );
-    res.status(201).json({
+    res.status(200).json({
       posts: allPosts,
     });
   } catch (error) {
@@ -182,16 +182,13 @@ export const getComments = async (req, res) => {
 export const deleteComment = async (req, res) => {
   try {
     const { commentId } = req.params;
-    const comment=await postService.getCommentbyId(commentId)
-    if (!comment) {
-      return res.status(404).json({ error: "Comment not found" });
-    }
+
     const userId = req.user.userId;
     const deletedComment = await postService.deleteComment(commentId, userId);
 
     return res.status(200).json({
-      message: "Post deleted successfully",
-      comment:deletedComment,
+      message: "Comment deleted successfully",
+      comment: deletedComment,
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });

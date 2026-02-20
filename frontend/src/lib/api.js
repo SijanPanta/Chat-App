@@ -115,18 +115,26 @@ export async function deletePost(postId) {
 }
 
 export async function getAllPosts(page, limit) {
-  const response = await api.get(
-    `/api/posts/?page=${page}&limit=${limit}`,
-  );
+  const response = await api.get(`/api/posts/?page=${page}&limit=${limit}`);
   return response.data;
 }
 
 export async function toggleLike(postId) {
-  const response =await api.post(`/api/posts/${postId}/like`)
+  const response = await api.post(`/api/posts/${postId}/like`);
   return response;
 }
 
 export async function getCommentsbyPost(postId) {
-  const response =await api.get(`/api/posts/comments/${postId}`)
+  const response = await api.get(`/api/posts/comments/${postId}`);
+  return response;
+}
+
+export async function postComment(postId, content) {
+  const response = await api.post(`/api/posts/comments/${postId}`, { content });
+  return response;
+}
+
+export async function deleteCommentById(commentId,postId){
+  const response = await api.delete(`/api/posts/comments/${commentId}?${postId}`);
   return response;
 }

@@ -5,6 +5,8 @@ import {
   deletePost,
   deleteProfile,
   toggleLike,
+  postComment,
+  deleteCommentById,
 } from "@/lib/api";
 
 export function useHandlers(queryClient, user, uiState, router) {
@@ -128,10 +130,10 @@ export function useHandlers(queryClient, user, uiState, router) {
       setUploading(false);
     }
   };
+
   const handleLikePost = async (postId) => {
     try {
       const res = await toggleLike(postId);
-      console.log(res);
 
       // Refetch posts to get updated isLiked status
       await queryClient.invalidateQueries({ queryKey: ["allPosts"] });
@@ -141,6 +143,37 @@ export function useHandlers(queryClient, user, uiState, router) {
     } catch (error) {
       console.error("Error toggling like:", error);
       setUploadError(error.message);
+    }
+  };
+
+  const usePostComment = async (postId, comment) => {
+    try {
+      setUploading(true);
+      setUploadError("");
+      await postComment(postId, comment);
+      await queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+      await queryClient.invalidateQueries({
+        queryKey: ["myPosts", user.userId],
+      });
+    } catch (error) {
+      console.error(error.message);
+      setUploadError(error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const deleteComment = async (commentId,postId) => {
+    try {
+      setUploadError('')
+      await deleteCommentById(commentId,postId);
+      await queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+      await queryClient.invalidateQueries({
+        queryKey: ["myPosts", user.userId],
+      });
+    } catch (err) {
+      setUploadError(err.message)
+      console.error(err.message);
     }
   };
 
@@ -154,5 +187,7 @@ export function useHandlers(queryClient, user, uiState, router) {
     deleteProfilePicture,
     handleDeletePost,
     handleLikePost,
+    usePostComment,
+    deleteComment,
   };
 }

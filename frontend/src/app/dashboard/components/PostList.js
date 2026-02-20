@@ -3,6 +3,7 @@ import Select from "react-select";
 import Post from "./Post";
 
 export default function PostList({
+  user,
   posts,
   handleDeletePost,
   handleLikePost,
@@ -11,6 +12,8 @@ export default function PostList({
   totalPages,
   setCurrentPage,
   useComments,
+  usePostComment,
+  deleteComment
 }) {
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -83,7 +86,10 @@ export default function PostList({
         {filteredPosts && filteredPosts.length > 0 ? (
           filteredPosts.map((post, index) => (
             <Post
+              user={user}
+              deleteComment={deleteComment}
               key={post.postId}
+              usePostComment={usePostComment}
               post={post}
               handleDeletePost={handleDeletePost}
               handleLikePost={handleLikePost}

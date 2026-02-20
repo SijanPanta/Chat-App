@@ -75,6 +75,8 @@ export function useDashboard() {
     setSelectedCategories: uiState.setSelectedCategories,
     setPostImage: uiState.setPostImage,
     handleLikePost: handlers.handleLikePost,
+    usePostComment: handlers.usePostComment,
+    deleteComment:handlers.deleteComment,
     // Router
     router,
 
