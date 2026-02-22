@@ -27,7 +27,12 @@ const storage = multer.diskStorage({
       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
       cb(null, `post-${uniqueSuffix}${path.extname(file.originalname)}`);
     } else {
-      cb(null, `profile-${req.params.id}${path.extname(file.originalname)}`);
+      // Save as a TEMP file so the existing profile picture is never
+      // touched until validation passes. validateImageContent renames it.
+      cb(
+        null,
+        `temp-${req.params.id}-${Date.now()}${path.extname(file.originalname)}`,
+      );
     }
   },
 });
@@ -56,6 +61,11 @@ const fileFilter = (req, file, cb) => {
  *
  * Magic bytes are the first few bytes baked into every real image file by the
  * format itself — they cannot be faked by simply renaming a file's extension.
+ *
+ * For profile pictures, the file is initially saved with a temp name so that
+ * the existing profile picture is never overwritten until validation passes.
+ * On success the temp file is renamed to the real final name. On failure only
+ * the temp file is deleted — the existing profile picture is left untouched.
  */
 export const validateImageContent = async (req, res, next) => {
   // Nothing uploaded — skip validation
@@ -81,12 +91,26 @@ export const validateImageContent = async (req, res, next) => {
     }
 
     if (!type || !ALLOWED_MIME_TYPES.has(type.mime)) {
-      // Delete the saved file so invalid data doesn't linger on disk
+      // Delete the TEMP file only — the existing profile picture is untouched
       await fs.unlink(file.path).catch(() => {});
       return res.status(400).json({
         message:
           "Invalid file: the content does not match a supported image format (jpeg, jpg, png, gif, webp).",
       });
+    }
+
+    // Validation passed — rename temp file to the real final filename
+    if (file.fieldname === "profilePicture") {
+      const dir = path.dirname(file.path);
+      const ext = path.extname(file.originalname).toLowerCase();
+      const finalFilename = `profile-${req.params.id}${ext}`;
+      const finalPath = path.join(dir, finalFilename);
+
+      await fs.rename(file.path, finalPath);
+
+      // Update req.file so the controller sees the correct filename and path
+      file.filename = finalFilename;
+      file.path = finalPath;
     }
   }
 
