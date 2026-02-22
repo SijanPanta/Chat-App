@@ -7,11 +7,15 @@ export default function Post({
   handleLikePost,
   useComments,
   usePostComment,
-  deleteComment
+  deleteComment,
 }) {
   const [showComments, setShowComments] = useState(false);
   const [comment, setComment] = useState("");
-  const { data: comments, isLoading } = useComments(post.postId);
+  const [commentPage, setCommentPage] = useState(1);
+  const { data, isLoading } = useComments(post.postId, commentPage);
+  const comments = data?.comments || [];
+  const totalPages = data?.totalPages || 1;
+
   const toggleComments = () => {
     setShowComments(!showComments);
   };
@@ -123,7 +127,7 @@ export default function Post({
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                   <p className="ml-3 text-gray-600">Loading comments...</p>
                 </div>
-              ) : comments && comments.length > 0 ? (
+              ) : comments.length > 0 ? (
                 <div className="space-y-3">
                   {comments.map((comment) => (
                     <div
@@ -145,14 +149,17 @@ export default function Post({
                           </div>
                           <p className="text-gray-700">{comment.content}</p>
                         </div>
-                        {(user.username === comment.user?.username||post.userName===user.username) && (
+                        {(user.username === comment.user?.username ||
+                          post.userName === user.username) && (
                           <button
-                            onClick={()=>deleteComment(comment.id,post.postId)}
-                            className="bg-red-800 text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-red-900 transition-colors duration-200">
+                            onClick={() =>
+                              deleteComment(comment.id, post.postId)
+                            }
+                            className="bg-red-800 text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-red-900 transition-colors duration-200"
+                          >
                             🗑️ Delete
                           </button>
                         )}
-
                       </div>
                     </div>
                   ))}
@@ -162,6 +169,29 @@ export default function Post({
                   <p className="text-gray-500">
                     No comments yet. Be the first to comment!
                   </p>
+                </div>
+              )}
+
+              {/* Comment Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-4 mt-4">
+                  <button
+                    onClick={() => setCommentPage((p) => p - 1)}
+                    disabled={commentPage === 1}
+                    className="px-4 py-1.5 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    ← Prev
+                  </button>
+                  <span className="text-sm text-gray-600">
+                    {commentPage} / {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCommentPage((p) => p + 1)}
+                    disabled={commentPage === totalPages}
+                    className="px-4 py-1.5 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next →
+                  </button>
                 </div>
               )}
             </div>
@@ -183,7 +213,7 @@ export default function Post({
         </div>
 
         {/* Delete Button */}
-        {handleDeletePost && (
+        {user.username===post.userName && (
           <button
             onClick={() => handleDeletePost(post.postId)}
             className="flex-shrink-0 bg-red-500 text-white px-5 py-2.5 rounded-lg hover:bg-red-600 active:bg-red-700 transition-colors duration-200 font-medium shadow-sm hover:shadow-md"

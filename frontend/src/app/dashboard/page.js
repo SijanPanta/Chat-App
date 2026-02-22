@@ -158,7 +158,9 @@ export default function Dashboard() {
         ) : (
           <AllPosts
             user={user}
-            posts={allPosts}
+              posts={allPosts}
+              handleDeletePost={handleDeletePost}
+              
             usePostComment={usePostComment}
             useComments={useComments}
             currentPage={allPostsPage}

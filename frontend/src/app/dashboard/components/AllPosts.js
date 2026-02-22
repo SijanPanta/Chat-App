@@ -10,11 +10,13 @@ export default function AllPostsList({
   useComments,
   usePostComment,
   deleteComment,
+  handleDeletePost,
 }) {
   return (
     <PostList
       user={user}
       deleteComment={deleteComment}
+      handleDeletePost={handleDeletePost}
       usePostComment={usePostComment}
       useComments={useComments}
       handleLikePost={handleLikePost}

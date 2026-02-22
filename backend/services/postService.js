@@ -1,6 +1,4 @@
-import { where } from "sequelize";
 import db from "../models/index.js";
-import { includes } from "zod";
 
 const { User, Post, Category, Like, Comments } = db;
 
@@ -12,7 +10,7 @@ export const createPost = async (userId, userName, content, url) => {
     images: url,
   });
 };
-// Add currentUserId as a parameter
+
 export const getAllPosts = async (offset, limit, currentUserId) => {
   const result = await Post.findAndCountAll({
     offset: Number(offset),
@@ -125,8 +123,9 @@ export const createComment = async (postId, userId, content) => {
   return comment;
 };
 
-export const getComments = async (postId) => {
-  return await Comments.findAll({
+export const getComments = async (postId, page = 1, limit = 5) => {
+  const offset = (page - 1) * limit;
+  const result = await Comments.findAndCountAll({
     where: { postId },
     include: [
       {
@@ -136,7 +135,14 @@ export const getComments = async (postId) => {
       },
     ],
     order: [["createdAt", "DESC"]],
+    limit: Number(limit),
+    offset: Number(offset),
   });
+  return {
+    comments: result.rows,
+    totalPages: Math.ceil(result.count / limit),
+    currentPage: Number(page),
+  };
 };
 
 export const getCommentbyId = async (id) => {

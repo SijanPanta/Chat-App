@@ -172,8 +172,9 @@ export const createComment = async (req, res) => {
 export const getComments = async (req, res) => {
   try {
     const { postId } = req.params;
-    const comments = await postService.getComments(postId);
-    return res.status(200).json({ comments });
+    const { page = 1, limit = 5 } = req.query;
+    const result = await postService.getComments(postId, page, limit);
+    return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

@@ -35,12 +35,12 @@ export function usePostData(pagination) {
     queryFn: fetchUser,
     retry: false,
   });
-  const useComments = (postId) => {
+  const useComments = (postId, page = 1) => {
     return useQuery({
-      queryKey: ["comments", postId],
+      queryKey: ["comments", postId, page],
       queryFn: async () => {
-        const res = await getCommentsbyPost(postId);
-        return res.data.comments || res.data;
+        const res = await getCommentsbyPost(postId, page);
+        return res.data;
       },
       enabled: !!postId,
       retry: false,
