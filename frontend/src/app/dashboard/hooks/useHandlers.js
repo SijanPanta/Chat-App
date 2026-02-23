@@ -93,7 +93,7 @@ export function useHandlers(queryClient, user, uiState, router) {
       await queryClient.invalidateQueries({ queryKey: ["allPosts"] });
     } catch (error) {
       console.error("Error creating post:", error.message);
-      setUploadError("Failed to create post. Please try again.");
+      setUploadError(error.message ||"Failed to create post. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -146,11 +146,11 @@ export function useHandlers(queryClient, user, uiState, router) {
     }
   };
 
-  const usePostComment = async (postId, comment) => {
+  const usePostComment = async (postId,commentId, comment) => {
     try {
       setUploading(true);
       setUploadError("");
-      await postComment(postId, comment);
+      await postComment(postId,commentId, comment);
       await queryClient.invalidateQueries({ queryKey: ["comments", postId] });
       await queryClient.invalidateQueries({
         queryKey: ["myPosts", user.userId],

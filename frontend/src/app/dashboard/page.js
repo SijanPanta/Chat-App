@@ -46,7 +46,7 @@ export default function Dashboard() {
     handleLikePost,
     useComments,
     usePostComment,
-    deleteComment
+    deleteComment,
   } = useDashboard();
   if (error) {
     return null;
@@ -158,9 +158,8 @@ export default function Dashboard() {
         ) : (
           <AllPosts
             user={user}
-              posts={allPosts}
-              handleDeletePost={handleDeletePost}
-              
+            posts={allPosts}
+            handleDeletePost={handleDeletePost}
             usePostComment={usePostComment}
             useComments={useComments}
             currentPage={allPostsPage}

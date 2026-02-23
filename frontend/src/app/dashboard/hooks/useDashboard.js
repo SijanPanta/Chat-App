@@ -23,6 +23,7 @@ export function useDashboard() {
   // Focus textarea when post input is shown
   const handleCreatePost = (role) => {
     uiState.setPostData("");
+    uiState.setPostImage('');
     if (role !== "admin") {
       alert("You are not Authorized");
       uiState.setUploadError("unauthorized");

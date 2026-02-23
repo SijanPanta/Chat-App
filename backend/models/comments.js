@@ -11,7 +11,12 @@ export default (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.User,{foreignKey:'userId',as:'user'})
-      this.belongsTo(models.Post,{foreignKey:'postId'})    }
+      this.belongsTo(models.Post,{foreignKey:'postId'})    
+  
+      this.hasMany(models.Comments,{foreignKey:'parentId',as:'reply'})
+      this.belongsTo(models.Comments,{foreignKey:'parentId',as:'parent'})
+    }
+    
   }
   Comments.init({
        postId: {
@@ -25,7 +30,10 @@ export default (sequelize, DataTypes) => {
       content:{
         type:DataTypes.TEXT,
         allowNull:false,
-
+    },
+    parentId: {
+       type: DataTypes.INTEGER,
+       allowNull:true
       }
   }, {
     sequelize,

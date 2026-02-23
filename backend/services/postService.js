@@ -1,3 +1,4 @@
+import { includes } from "zod";
 import db from "../models/index.js";
 
 const { User, Post, Category, Like, Comments } = db;
@@ -114,24 +115,37 @@ export const updatePostById = async (postId, updateData) => {
   return await post.update(updateData);
 };
 
-export const createComment = async (postId, userId, content) => {
+export const createComment = async (postId, userId, content, parentId) => {
   const comment = await Comments.create({
     postId,
     userId,
     content,
+    parentId: parentId ?? null,
   });
+
   return comment;
 };
 
 export const getComments = async (postId, page = 1, limit = 5) => {
   const offset = (page - 1) * limit;
   const result = await Comments.findAndCountAll({
-    where: { postId },
+    where: { postId, parentId: null },
     include: [
       {
         model: User,
         attributes: ["userId", "username"],
         as: "user",
+      },
+      {
+        model: Comments,
+        as: "reply",
+        include: [
+          {
+            model: User,
+            attributes: ["userId", "username"],
+            as: "user",
+          },
+        ],
       },
     ],
     order: [["createdAt", "DESC"]],
@@ -173,3 +187,14 @@ export const deleteComment = async (id, userId, postId) => {
   }
   return await comment.destroy();
 };
+
+// export const getReply = async (commentId, page = 1, limit = 5) => {
+//   const offset = (page - 1) * limit;
+//   const result = await Comments.findAndCountAll({
+//     where: { parentId: commentId },
+//     limit: Number(limit),
+//     offset: Number(offset),
+//     include: [{ model: User, attributes: ["userId", "username"], as: "user" }],
+//     order: [["createdAt", "ASC"]],
+//   });
+// };

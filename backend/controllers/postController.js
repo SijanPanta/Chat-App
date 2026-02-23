@@ -151,18 +151,37 @@ export const toggleLike = async (req, res) => {
 
 export const createComment = async (req, res) => {
   try {
-    const { postId } = req.params;
+    const { postId, commentId } = req.params;
     const { content } = req.body;
     const userId = req.user.userId;
     if (!content || content.trim() === "") {
       return res.status(400).json({ error: "Content cannot be empty" });
     }
-    const post = await postService.getPostById(postId);
 
+    const post = await postService.getPostById(postId);
     if (!post) {
       return res.status(404).json({ error: "post not found" });
     }
-    const comment = await postService.createComment(postId, userId, content);
+
+    // If a commentId is provided, validate it exists and belongs to this post
+    if (commentId) {
+      const parentComment = await postService.getCommentbyId(commentId);
+      if (!parentComment) {
+        return res.status(404).json({ error: "Parent comment not found" });
+      }
+      if (String(parentComment.postId) !== String(postId)) {
+        return res
+          .status(400)
+          .json({ error: "Parent comment does not belong to this post" });
+      }
+    }
+
+    const comment = await postService.createComment(
+      postId,
+      userId,
+      content,
+      commentId,
+    );
     return res.status(201).json({ postId, userId, comment });
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -195,3 +214,14 @@ export const deleteComment = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+// export const getReply = async (req, res) => {
+//   try {
+//     const {commentId } = req.params;
+//     const userId = req.user.userId;
+//     const reply = await postService.getReplies(commentId);
+//     return res.status(201).json({userId, reply });
+//   } catch (error) {
+//     return res.status(500).json({ error: error.message });
+//   }
+// }

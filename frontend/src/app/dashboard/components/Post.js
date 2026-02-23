@@ -10,11 +10,18 @@ export default function Post({
   deleteComment,
 }) {
   const [showComments, setShowComments] = useState(false);
+  const [showReply, setShowReply] = useState(false);
   const [comment, setComment] = useState("");
+  const [reply, setReply] = useState("");
   const [commentPage, setCommentPage] = useState(1);
   const { data, isLoading } = useComments(post.postId, commentPage);
   const comments = data?.comments || [];
+  const [openReplyId, setOpenReplyId] = useState(null);
   const totalPages = data?.totalPages || 1;
+
+  const toggleReply = (commentId) => {
+    setOpenReplyId((prev) => (prev === commentId ? null : commentId));
+  };
 
   const toggleComments = () => {
     setShowComments(!showComments);
@@ -94,7 +101,11 @@ export default function Post({
               className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all duration-200"
             >
               <span className="text-lg">💬</span>
-              <span>{showComments ? "Hide Comments" : "Show Comments"}</span>
+              <span>
+                {showComments
+                  ? "Hide Comments"
+                  : `Show Comments (${comments?.length || 0})`}
+              </span>
             </button>
           </div>
 
@@ -110,7 +121,7 @@ export default function Post({
               />
               <button
                 onClick={() => {
-                  usePostComment(post.postId, comment);
+                  usePostComment(post.postId, null, comment);
                   setComment("");
                 }}
                 className="mt-2 mb-4 flex items-center gap-2 px-4 py-2 rounded-lg font-medium bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
@@ -150,7 +161,8 @@ export default function Post({
                           <p className="text-gray-700">{comment.content}</p>
                         </div>
                         {(user.username === comment.user?.username ||
-                          post.userName === user.username) && (
+                          post.userName === user.username ||
+                          user.role === "admin") && (
                           <button
                             onClick={() =>
                               deleteComment(comment.id, post.postId)
@@ -161,6 +173,71 @@ export default function Post({
                           </button>
                         )}
                       </div>
+                      <button
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all duration-200"
+                        onClick={() => toggleReply(comment.id)}
+                      >
+                        {openReplyId === comment.id
+                          ? "Hide replies"
+                          : `Show replies (${comment.reply?.length || 0})`}
+                      </button>
+                      {openReplyId === comment.id && (
+                        <div className="ml-8 mt-2 space-y-2">
+                          {comment.reply?.map((reply) => (
+                            <div
+                              key={reply.id}
+                              className="bg-white rounded-lg p-3 border border-gray-100"
+                            >
+                              <div className="flex items-center gap-2 mb-1">
+                                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                  {reply.user?.username?.[0]?.toUpperCase() ||
+                                    "U"}
+                                </div>
+                                <span className="font-semibold text-gray-800 text-sm">
+                                  {reply.user?.username || "Anonymous"}
+                                </span>
+                                <span className="text-xs text-gray-400">
+                                  {new Date(
+                                    reply.createdAt,
+                                  ).toLocaleDateString()}
+                                </span>
+                              </div>
+                              <p className="text-gray-700 text-sm">
+                                {reply.content}
+                              </p>
+                              {(user.username === reply.user?.username ||
+                                post.userName === user.username ||
+                                user.role === "admin") && (
+                                <button
+                                  onClick={() =>
+                                    deleteComment(reply.id, post.postId)
+                                  }
+                                  className="bg-red-800 text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-red-900 transition-colors duration-200"
+                                >
+                                  🗑️ Delete
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                          <input
+                            value={reply}
+                            onChange={(e) => setReply(e.target.value)}
+                            type="text"
+                            placeholder={`Add your reply  as ${user.username}`}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
+                          />
+                          <button
+                            onClick={() => {
+                              usePostComment(post.postId, comment.id, reply);
+                              setReply("");
+                            }}
+                            className="mt-2 mb-4 flex items-center gap-2 px-4 py-2 rounded-lg font-medium bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                          >
+                            <span className="text-lg">💬</span>
+                            <span>Post Reply</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -213,7 +290,7 @@ export default function Post({
         </div>
 
         {/* Delete Button */}
-        {user.username===post.userName && (
+        {(user.username === post.userName || user.role === "admin") && (
           <button
             onClick={() => handleDeletePost(post.postId)}
             className="flex-shrink-0 bg-red-500 text-white px-5 py-2.5 rounded-lg hover:bg-red-600 active:bg-red-700 transition-colors duration-200 font-medium shadow-sm hover:shadow-md"

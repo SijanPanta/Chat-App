@@ -7,8 +7,11 @@ export async function getCommentsbyPost(postId, page = 1) {
   return response;
 }
 
-export async function postComment(postId, content) {
-  const response = await api.post(`/api/posts/comments/${postId}`, { content });
+export async function postComment(postId, commentId, content) {
+  const url = commentId
+    ? `/api/posts/comments/${postId}/${commentId}`
+    : `/api/posts/comments/${postId}`;
+  const response = await api.post(url, { content });
   return response;
 }
 

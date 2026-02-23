@@ -282,9 +282,10 @@ router.post("/:postId/like", authenticate, postController.toggleLike);
 
 /**
  * @swagger
- * /api/posts/comments/{postId}:
+ * /api/posts/comments/{postId}/{commentId}:
  *   post:
- *     summary: Add a comment to a post
+ *     summary: Add a comment or reply to a post
+ *     description: If `commentId` is omitted, creates a top-level comment. If provided, creates a reply to that comment.
  *     tags: [Posts]
  *     security:
  *       - bearerAuth: []
@@ -295,6 +296,12 @@ router.post("/:postId/like", authenticate, postController.toggleLike);
  *         schema:
  *           type: integer
  *         description: The post ID
+ *       - in: path
+ *         name: commentId
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         description: The parent comment ID (omit for a top-level comment)
  *     requestBody:
  *       required: true
  *       content:
@@ -339,7 +346,11 @@ router.post("/:postId/like", authenticate, postController.toggleLike);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post("/comments/:postId", authenticate, postController.createComment);
+router.post(
+  "/comments/:postId{/:commentId}",
+  authenticate,
+  postController.createComment,
+);
 
 /**
  * @swagger
@@ -448,5 +459,7 @@ router.delete(
   authenticate,
   postController.deleteComment,
 );
+
+
 
 export default router;
