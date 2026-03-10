@@ -1,4 +1,9 @@
-import "dotenv/config";
+import { config } from "dotenv";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+config({ path: resolve(__rootDir, ".env") });
 
 export default {
   development: {
