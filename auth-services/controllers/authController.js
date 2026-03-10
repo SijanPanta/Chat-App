@@ -1,9 +1,22 @@
 import * as authService from "../services/authService.js";
 
+// Called by the main app whenever a user's data is mutated
+// Clears the Redis cache for that user so stale data is not served
+export const invalidateCache = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    await authService.clearUserCache(userId);
+    res.status(200).json({ message: `Cache cleared for user ${userId}` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const register = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
 
+    console.log(username, email, password);
     const existing = await authService.findUserByEmail(email);
     if (existing) {
       return res.status(409).json({ error: "User is already registered" });

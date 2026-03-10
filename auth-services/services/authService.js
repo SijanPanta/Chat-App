@@ -6,8 +6,7 @@ import redisClient from "../config/redis.js";
 const { User } = db;
 const USER_CACHE_TTL = 3600; // 1 hour
 
-export const hashPassword = async (password) =>
-  bcrypt.hash(password, 10);
+export const hashPassword = async (password) => bcrypt.hash(password, 10);
 
 export const comparePassword = async (password, hash) =>
   bcrypt.compare(password, hash);
@@ -17,8 +16,7 @@ export const generateToken = (userId) =>
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
 
-export const verifyToken = (token) =>
-  jwt.verify(token, process.env.JWT_SECRET);
+export const verifyToken = (token) => jwt.verify(token, process.env.JWT_SECRET);
 
 export const createUser = async (username, email, password, role) => {
   const password_hash = await hashPassword(password);
@@ -49,9 +47,7 @@ export const invalidateSession = async (token) => {
   if (!decoded) return;
 
   // Blacklist the token for its remaining lifetime
-  const ttl = decoded.exp
-    ? decoded.exp - Math.floor(Date.now() / 1000)
-    : 3600;
+  const ttl = decoded.exp ? decoded.exp - Math.floor(Date.now() / 1000) : 3600;
 
   if (ttl > 0) {
     await redisClient.setEx(`blacklist:${token}`, ttl, "1");
@@ -59,6 +55,11 @@ export const invalidateSession = async (token) => {
 
   // Clear user cache so stale data is not served
   await redisClient.del(`user:${decoded.userId}`);
+};
+
+// Called by the main app whenever a user's data is mutated (profile pic, password, etc.)
+export const clearUserCache = async (userId) => {
+  await redisClient.del(`user:${userId}`);
 };
 
 // Called by GET /auth/verify — used by the main app's authenticate middleware

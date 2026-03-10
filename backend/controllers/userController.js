@@ -1,5 +1,18 @@
+import bcrypt from "bcrypt";
 import * as userService from "../services/userService.js";
-import * as authService from "../services/authService.js";
+
+// Calls auth-service to clear the Redis cache for a user
+// Must be called after any mutation to the user's data
+const clearUserCache = async (userId) => {
+  try {
+    await fetch(`${process.env.AUTH_SERVICE_URL}/auth/cache/${userId}`, {
+      method: "DELETE",
+    });
+  } catch (err) {
+    // Cache clearing failure should never break the main operation
+    console.error("Failed to clear user cache:", err.message);
+  }
+};
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -13,7 +26,6 @@ export const getAllUsers = async (req, res) => {
 export const uploadProfilePicture = async (req, res) => {
   try {
     const { id } = req.params;
-    // console.log(id)
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
@@ -24,6 +36,8 @@ export const uploadProfilePicture = async (req, res) => {
     const updatedUser = await userService.updateUserById(id, {
       profilePicture: profilePicturePath,
     });
+
+    await clearUserCache(id);
 
     return res.status(200).json({
       message: "Profile picture uploaded successfully",
@@ -39,11 +53,11 @@ export const uploadProfilePicture = async (req, res) => {
 export const deleteProfilePicture = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await userService.updateUserById(id, {
-      profilePicture: null,
-    });
 
-    res.status(200).json({ message: "profile deleted" });
+    await userService.updateUserById(id, { profilePicture: null });
+    await clearUserCache(id);
+
+    res.status(200).json({ message: "Profile picture deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -53,34 +67,27 @@ export const passwordReset = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
 
-    // Get user with password_hash using userId from JWT token
     const user = await userService.getUserById(req.user.userId);
-    // console.log(user);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Verify old password
-    const isValidPassword = await authService.comparePassword(
+    const isValidPassword = await bcrypt.compare(
       oldPassword,
       user.password_hash,
     );
-
     if (!isValidPassword) {
-      return res.status(400).json({
-        error: "Current password is incorrect",
-      });
+      return res.status(400).json({ error: "Current password is incorrect" });
     }
 
-    // Hash new password
-    const hashedPassword = await authService.hashPassword(newPassword);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update password using userId
     await userService.updateUserById(user.userId, {
       password_hash: hashedPassword,
     });
 
-    // Remove password_hash from response
+    await clearUserCache(user.userId);
+
     const { password_hash, ...userWithoutPassword } = user.toJSON();
 
     return res.status(200).json({
@@ -99,7 +106,6 @@ export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
     const user = await userService.getUserById(id);
-    // console.log(user);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -115,6 +121,8 @@ export const updateUser = async (req, res) => {
     const updateData = req.body;
 
     const updatedUser = await userService.updateUserById(id, updateData);
+    await clearUserCache(id);
+
     res.status(200).json({
       message: "User updated successfully",
       user: updatedUser,
@@ -132,11 +140,12 @@ export const deleteUser = async (req, res) => {
     const { id } = req.params;
     const user = await userService.getUserById(id);
     if (!user) {
-      res.status(404).json({ error: "user not found" });
+      return res.status(404).json({ error: "User not found" });
     }
 
-    // console.log("users"+user)
     await userService.deleteUserById(id);
+    await clearUserCache(id);
+
     res.status(200).json({ message: "User deleted successfully", user });
   } catch (error) {
     if (error.message === "User not found") {

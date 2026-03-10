@@ -35,4 +35,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api", routes);
 
+app.use("/", (req, res) => {
+  res.status(404).json({ error: "API route not found" });
+});
+
 export default app;

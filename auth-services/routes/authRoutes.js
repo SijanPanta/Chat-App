@@ -19,4 +19,7 @@ router.get(
 // Internal route — called by the main app's authenticate middleware
 router.get("/verify", authController.verify);
 
+// Internal route — called by the main app whenever a user's data is mutated
+router.delete("/cache/:userId", authController.invalidateCache);
+
 export default router;
