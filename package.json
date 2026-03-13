@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon backend/server.js",
     "dev:frontend": "npm run dev --prefix frontend",
-    "dev:chat": "npm run dev --prefix chat-services",
+    "dev:chat": "fuser -k 4001/tcp 2>/dev/null; npm run dev --prefix chat-services",
     "dev:auth": "npm run dev --prefix auth-services",
     "dev:all": "concurrently --kill-others \"npm run dev\" \"npm run dev:frontend\" \"npm run dev:chat\" \"npm run dev:auth\""
   },

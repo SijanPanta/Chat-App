@@ -154,3 +154,13 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const searchUsers = async (req, res) => {
+  try {
+    const qry = req.query.q;
+    const users = await userService.searchUser(qry)
+    res.status(200).json(users)
+  } catch (error) {
+    return req.status(400).json({ error: error.message });
+  }
+};

@@ -7,6 +7,7 @@ import {
   toggleLike,
   postComment,
   deleteCommentById,
+  searchUser,
 } from "@/lib/api";
 
 export function useHandlers(queryClient, user, uiState, router) {
@@ -93,7 +94,9 @@ export function useHandlers(queryClient, user, uiState, router) {
       await queryClient.invalidateQueries({ queryKey: ["allPosts"] });
     } catch (error) {
       console.error("Error creating post:", error.message);
-      setUploadError(error.message ||"Failed to create post. Please try again.");
+      setUploadError(
+        error.message || "Failed to create post. Please try again.",
+      );
     } finally {
       setUploading(false);
     }
@@ -146,11 +149,11 @@ export function useHandlers(queryClient, user, uiState, router) {
     }
   };
 
-  const usePostComment = async (postId,commentId, comment) => {
+  const usePostComment = async (postId, commentId, comment) => {
     try {
       setUploading(true);
       setUploadError("");
-      await postComment(postId,commentId, comment);
+      await postComment(postId, commentId, comment);
       await queryClient.invalidateQueries({ queryKey: ["comments", postId] });
       await queryClient.invalidateQueries({
         queryKey: ["myPosts", user.userId],
@@ -163,16 +166,29 @@ export function useHandlers(queryClient, user, uiState, router) {
     }
   };
 
-  const deleteComment = async (commentId,postId) => {
+  const deleteComment = async (commentId, postId) => {
     try {
-      setUploadError('')
-      await deleteCommentById(commentId,postId);
+      setUploadError("");
+      await deleteCommentById(commentId, postId);
       await queryClient.invalidateQueries({ queryKey: ["comments", postId] });
       await queryClient.invalidateQueries({
         queryKey: ["myPosts", user.userId],
       });
     } catch (err) {
-      setUploadError(err.message)
+      setUploadError(err.message);
+      console.error(err.message);
+    }
+  };
+
+  const searchUsers = async (query) => {
+    try {
+      if (!query.trim()) {
+        return null;
+      }
+      const users = await searchUser(query);
+      return users;
+      console.log(user);
+    } catch (err) {
       console.error(err.message);
     }
   };
@@ -189,5 +205,6 @@ export function useHandlers(queryClient, user, uiState, router) {
     handleLikePost,
     usePostComment,
     deleteComment,
+    searchUsers,
   };
 }

@@ -10,5 +10,10 @@
     "dev": "nodemon server.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "jsonwebtoken": "^9.0.3",
+    "redis": "^5.11.0"
+  }
 }

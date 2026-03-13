@@ -1,33 +1,40 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useDashboard } from '../dashboard/hooks/useDashboard';
-import { io } from 'socket.io-client';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-
+import React, { useState, useEffect, useRef } from "react";
+import { useDashboard } from "../dashboard/hooks/useDashboard";
+import { io } from "socket.io-client";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { useSearchParams } from "next/navigation";
 // Use environment variable or default to the microservice port
-const SOCKET_URL = process.env.NEXT_PUBLIC_CHAT_SERVICE_URL || 'http://localhost:4001';
+const SOCKET_URL =
+  process.env.NEXT_PUBLIC_CHAT_SERVICE_URL || "http://localhost:4001";
 
 export default function ChatPage() {
   const [socket, setSocket] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [roomId, setRoomId] = useState('general');
+  const [inputMessage, setInputMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const messagesEndRef = useRef(null);
-const {router} = useDashboard();
+  const { router, user } = useDashboard();
+  const searchParams = useSearchParams();
+  const targetUserId = searchParams.get("with");
+  const targetUsername = searchParams.get("username");
   // Auto-scroll to bottom when new messages arrive
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const dmRoomId = targetUserId
+    ? `dm_${[user?.userId, targetUserId].sort().join('_')}`
+    : 'general';
+  const [roomId, setRoomId] = useState(dmRoomId);
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   useEffect(() => {
     // 1. Fetch the JWT from localStorage
-    const token = localStorage.getItem('token'); 
+    const token = localStorage.getItem("token");
     if (!token) {
       console.error("No token found. User might not be logged in.");
       // Optional: Add routing to redirect to login page here
@@ -42,20 +49,20 @@ const {router} = useDashboard();
     });
 
     // 3. Set up event listeners
-    newSocket.on('connect', () => {
-      console.log('Connected to chat server!', newSocket.id);
+    newSocket.on("connect", () => {
+      console.log("Connected to chat server!", newSocket.id);
       setIsConnected(true);
-      newSocket.emit('join_room', roomId);
+      newSocket.emit("join_room", roomId);
     });
 
-    newSocket.on('disconnect', () => {
-      console.log('Disconnected from chat server');
+    newSocket.on("disconnect", () => {
+      console.log("Disconnected from chat server");
       setIsConnected(false);
     });
 
     // Listen for incoming messages broadcasted from the backend
-    newSocket.on('receive_message', (data) => {
-      console.log('Message received:', data);
+    newSocket.on("receive_message", (data) => {
+      console.log("Message received:", data);
       setMessages((prevMessages) => [...prevMessages, data]);
     });
 
@@ -73,53 +80,65 @@ const {router} = useDashboard();
       const messageData = {
         roomId: roomId,
         message: inputMessage,
-        // The senderId will be handled by the backend's JWT decoding
       };
 
       // Emit to the backend messageHandler
-      socket.emit('send_message', messageData, (response) => {
-        if (response.status === 'success') {
-          console.log('Message sent successfully confirmed by backend');
+      socket.emit("send_message", messageData, (response) => {
+        if (response.status === "success") {
+          console.log("Message sent successfully confirmed by backend");
         }
       });
 
       // Optimistically add the message to our own UI
-      setMessages((prev) => [...prev, { senderId: 'Me', message: inputMessage }]);
-      setInputMessage('');
+      setMessages((prev) => [
+        ...prev,
+        { senderId: "Me", message: inputMessage },
+      ]);
+      setInputMessage("");
     }
   };
 
   return (
     <div className="flex flex-col h-screen max-w-2xl mx-auto p-4 bg-gray-50">
       <div className="bg-white p-4 rounded-t-lg shadow-sm border-b flex justify-between items-center">
-        <h1 className="text-xl font-bold text-gray-800"><button onClick={() => router.push('/dashboard')}>
-          <ArrowLeftIcon className="w-5 h-5" />
-        </button>
-          Global Chat ({roomId})</h1>
+        <h1 className="text-xl font-bold text-gray-800">
+          <button onClick={() => router.push("/dashboard")}>
+            <ArrowLeftIcon className="w-5 h-5" />
+          </button>
+          {targetUsername?targetUsername:`Global Chat`+ '  ('+roomId+')'}
+        </h1>
         <div className="flex items-center">
-          <div className={`w-3 h-3 rounded-full mr-2 ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
-          <span className="text-sm text-gray-500">{isConnected ? 'Connected' : 'Disconnected'}</span>
+          <div
+            className={`w-3 h-3 rounded-full mr-2 ${isConnected ? "bg-green-500" : "bg-red-500"}`}
+          ></div>
+          <span className="text-sm text-gray-500">
+            {isConnected ? "Connected" : "Disconnected"}
+          </span>
         </div>
       </div>
 
       <div className="flex-1 bg-white p-4 overflow-y-auto border-x border-gray-200">
         <div className="space-y-4">
           {messages.length === 0 ? (
-            <div className="text-center text-gray-400 mt-10">No messages yet. Start chatting!</div>
+            <div className="text-center text-gray-400 mt-10">
+              No messages yet. Start chatting!
+            </div>
           ) : (
             messages.map((msg, index) => (
-              <div 
-                key={index} 
-                className={`flex flex-col ${msg.senderId === 'Me' ? 'items-end' : 'items-start'}`}
+              <div
+                key={index}
+                className={`flex flex-col ${msg.senderId === "Me" ? "items-end" : "items-start"}`}
               >
-                <div 
+                <div
                   className={`max-w-[70%] rounded-lg p-3 ${
-                    msg.senderId === 'Me' 
-                      ? 'bg-blue-500 text-white' 
-                      : 'bg-gray-200 text-gray-800'
+                    msg.senderId === "Me"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-800"
                   }`}
                 >
-                  <div className="text-xs opacity-75 mb-1">{msg.senderId === 'Me' ? 'You' : msg.senderId}</div>
+                  <div className="text-xs opacity-75 mb-1">
+                    {msg.senderId === "Me" ? "You" : msg.senderId}
+                  </div>
                   <div>{msg.message}</div>
                 </div>
               </div>

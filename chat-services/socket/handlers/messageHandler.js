@@ -6,7 +6,7 @@ export default function registerMessageHandlers(io, socket) {
   socket.on('send_message', async (data, callback) => {
     try {
       console.log(`Message received from ${socket.id}:`, data);
-      
+     
       const { roomId, message } = data;
 
       // 1. Save to database using chatService

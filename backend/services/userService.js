@@ -34,3 +34,16 @@ export const deleteUserById = async (userId) => {
   }
   return await user.destroy();
 };
+
+export const searchUser = async (q) => {
+  const { Op } = db.Sequelize;
+  const users = await User.findAll({
+    where: {
+      username: {
+        [Op.like]: `${q}%`,
+      },
+    },
+    attributes: { exclude: ["password_hash"] },
+  });
+  return users;
+};

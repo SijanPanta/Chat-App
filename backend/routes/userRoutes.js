@@ -44,6 +44,7 @@ const router = express.Router();
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get("/", authenticate, userController.getAllUsers);
+router.get("/search-user", userController.searchUsers);
 
 /**
  * @swagger

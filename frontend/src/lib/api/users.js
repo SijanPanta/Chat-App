@@ -17,3 +17,8 @@ export async function changePassword(data) {
   const response = await api.put("/api/users/password/reset", data);
   return response.data;
 }
+
+export async function searchUser(query) {
+  const response = await api.get(`/api/users/search-user?q=${query}`)
+  return response.data;
+}

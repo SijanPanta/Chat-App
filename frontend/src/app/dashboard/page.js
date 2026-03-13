@@ -6,8 +6,14 @@ import ProfilePicture from "./components/ProfilePicture";
 import PostInput from "./components/PostInput";
 import MyPostsList from "./components/MyPostList";
 import AllPosts from "./components/AllPosts";
+import { useState } from "react";
+import SearchUser from "./components/SearchUsers";
 
 export default function Dashboard() {
+  const [query, setQuery] = useState("");
+  const [searchResults, setSearchResults] = useState(null); // null = closed, [] = open (empty)
+  const [searching, setSearching] = useState(false);
+
   const {
     user,
     allPosts,
@@ -47,6 +53,7 @@ export default function Dashboard() {
     useComments,
     usePostComment,
     deleteComment,
+    searchUsers,
   } = useDashboard();
   if (error) {
     return null;
@@ -59,10 +66,49 @@ export default function Dashboard() {
       </div>
     );
   }
+  const handleSearch = async () => {
+    if (!query.trim()) return;
+    setSearching(true);
+    const results = await searchUsers(query);
+    setSearchResults(results ?? []); // open the dropdown
+    setSearching(false);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSearch();
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-3xl font-bold mb-6">Welcome to Chat App! 🎉</h1>
+        <div className="flex justify-between">
+          <h1 className="text-3xl font-bold mb-6">Welcome to Chat App! 🎉</h1>
+          <div className="relative flex gap-2 items-center">
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Search users..."
+              className="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <button
+              onClick={handleSearch}
+              disabled={searching}
+              className="bg-blue-500 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-600 disabled:opacity-50"
+            >
+              {searching ? "..." : "Search"}
+            </button>
+
+            <SearchUser
+              users={searchResults}
+              onClose={() => setSearchResults(null)}
+              API_URL={API_URL}
+              onUserClick={(targetUser) => {
+                router.push(`/chat?with=${targetUser.userId}&username=${targetUser.username}`)
+              }}
+            />
+          </div>
+        </div>
         {uploadError && (
           <p className="text-sm text-red-600 mt-2">{uploadError}</p>
         )}
