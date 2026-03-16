@@ -3,30 +3,20 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchUser, searchUser, logout } from "@/lib/api";
+import { searchUser } from "@/lib/api";
 import SearchUser from "@/app/dashboard/components/SearchUsers";
 import { useDashboard } from "@/app/dashboard/hooks/useDashboard";
+
 export default function Navbar() {
   const router = useRouter();
-  const queryClient = useQueryClient();
-  const { handleLogout } = useDashboard();
+  const { handleLogout,user,API_URL } = useDashboard();
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState(null);
   const [searching, setSearching] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const dropdownRef = useRef(null);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030";
 
-  // Fetch the logged-in user from the global cache
-  const { data: user } = useQuery({
-    queryKey: ["user"],
-    queryFn: fetchUser,
-    retry: false,
-  });
-
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {

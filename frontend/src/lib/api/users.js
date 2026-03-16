@@ -9,7 +9,7 @@ export async function uploadProfilePicture(userId, formData) {
 }
 
 export async function deleteProfile(userId) {
-  const response = await api.delete(`/api/users/${userId}/profile-picture`);
+  await api.delete(`/api/users/${userId}/profile-picture`);
   return { success: true };
 }
 

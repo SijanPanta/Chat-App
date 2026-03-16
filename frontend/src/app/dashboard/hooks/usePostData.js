@@ -58,7 +58,7 @@ export function usePostData(pagination) {
   const { data: myPosts = [] } = useQuery({
     queryKey: ["myPosts", user?.userId, myPostsPage],
     queryFn: async () => {
-      const postsPerPage = 5;
+      const postsPerPage = 20;
       const response = await getUserPosts(
         user?.userId,
         myPostsPage,
@@ -74,7 +74,7 @@ export function usePostData(pagination) {
   const { data: allPosts = [] } = useQuery({
     queryKey: ["allPosts", allPostsPage],
     queryFn: async () => {
-      const postsPerPage = 5;
+      const postsPerPage = 20;
       const response = await getAllPosts(allPostsPage, postsPerPage);
       const totalPosts = response.posts.count;
       setAllPostsTotalPages(Math.ceil(totalPosts / postsPerPage));

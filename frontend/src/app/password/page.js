@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 export default function PasswordPage() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [error, setError] = useState("");
   const [passwordChanged, setPasswordChanged] = useState(false);
   const router = useRouter();
@@ -67,17 +69,26 @@ export default function PasswordPage() {
                   >
                     Old Password
                   </label>
-                  <input
-                    type="password"
-                    id="oldPassword"
-                    name="oldPassword"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter old password"
-                    required
-                    onChange={(e) => {
-                      setOldPassword(e.target.value);
-                    }}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showOldPassword ? "text" : "password"}
+                      id="oldPassword"
+                      name="oldPassword"
+                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter old password"
+                      required
+                      onChange={(e) => {
+                        setOldPassword(e.target.value);
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowOldPassword(!showOldPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      {showOldPassword ? "Hide" : "Show"}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="mb-6">
@@ -87,17 +98,26 @@ export default function PasswordPage() {
                   >
                     New Password
                   </label>
-                  <input
-                    type="password"
-                    id="newPassword"
-                    name="newPassword"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter new password"
-                    required
-                    onChange={(e) => {
-                      setNewPassword(e.target.value);
-                    }}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showNewPassword ? "text" : "password"}
+                      id="newPassword"
+                      name="newPassword"
+                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter new password"
+                      required
+                      onChange={(e) => {
+                        setNewPassword(e.target.value);
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      {showNewPassword ? "Hide" : "Show"}
+                    </button>
+                  </div>
                 </div>
 
                 <button
@@ -114,10 +134,10 @@ export default function PasswordPage() {
                     Back to login
                   </button>
                   <button
-                    onClick={() => router.push("/dashboard")}
-                    className="mt-4 flex-1 bg-orange-5  00 text-white px-6 py-2 rounded hover:bg-orange-600"
+                    onClick={() => router.push("/profile")}
+                    className="mt-4 flex-1 bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600"
                   >
-                    Back to Dashboard
+                    Back to Profile
                   </button>
                 </div>
               </form>
