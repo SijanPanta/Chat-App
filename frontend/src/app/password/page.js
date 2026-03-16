@@ -107,20 +107,19 @@ export default function PasswordPage() {
                   Change Password
                 </button>
                 <div className=" flex">
-
-                <button
-                  onClick={() => router.push("/login")}
-                  className="mt-4 flex-1 bg-orange-500 mr-2 text-white px-6 py-2 rounded hover:bg-orange-600"
+                  <button
+                    onClick={() => router.push("/login")}
+                    className="mt-4 flex-1 bg-orange-500 mr-2 text-white px-6 py-2 rounded hover:bg-orange-600"
                   >
-                  Back to login
-                </button>
-                <button
-                  onClick={() => router.push("/dashboard")}
-                  className="mt-4 flex-1 bg-orange-5  00 text-white px-6 py-2 rounded hover:bg-orange-600"
+                    Back to login
+                  </button>
+                  <button
+                    onClick={() => router.push("/dashboard")}
+                    className="mt-4 flex-1 bg-orange-5  00 text-white px-6 py-2 rounded hover:bg-orange-600"
                   >
-                  Back to Dashboard
-                </button>
-                  </div>
+                    Back to Dashboard
+                  </button>
+                </div>
               </form>
             </>
           )}

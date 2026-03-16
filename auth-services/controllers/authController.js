@@ -16,7 +16,6 @@ export const register = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
 
-    console.log(username, email, password);
     const existing = await authService.findUserByEmail(email);
     if (existing) {
       return res.status(409).json({ error: "User is already registered" });

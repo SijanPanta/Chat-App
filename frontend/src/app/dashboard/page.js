@@ -1,207 +1,62 @@
 "use client";
 
 import { useDashboard } from "./hooks/useDashboard";
-import UserInfo from "./components/UserInfo";
-import ProfilePicture from "./components/ProfilePicture";
-import PostInput from "./components/PostInput";
-import MyPostsList from "./components/MyPostList";
 import AllPosts from "./components/AllPosts";
-import { useState } from "react";
-import SearchUser from "./components/SearchUsers";
+import Navbar from "@/components/Navbar";
 
 export default function Dashboard() {
-  const [query, setQuery] = useState("");
-  const [searchResults, setSearchResults] = useState(null); // null = closed, [] = open (empty)
-  const [searching, setSearching] = useState(false);
-
   const {
     user,
     allPosts,
     isLoading,
     error,
-    uploading,
     uploadError,
-    uploadedUrl,
-    myPosts,
-    postData,
-    postInput,
-    API_URL,
-    fileInputRef,
-    textareaRef,
     allPostsPage,
     allPostsTotalPages,
-    myPostsTotalPages,
-    myPostsPage,
-    selectedCategories,
-    postImage,
-    handleLogout,
-    changePassword,
-    fileUpload,
-    handleCreatePost,
-    handleSubmitPost,
-    setPostData,
-    deleteProfilePicture,
     handleDeletePost,
-    setMyPostsPage,
     setAllPostsPage,
-    setSelectedCategories,
-    setPostImage,
-    router,
-    myPost,
-    setMyPost,
     handleLikePost,
     useComments,
     usePostComment,
     deleteComment,
-    searchUsers,
   } = useDashboard();
-  if (error) {
-    return null;
-  }
+
+  if (error) return null;
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-medium animate-pulse">
+            Loading ChatPat...
+          </p>
+        </div>
       </div>
     );
   }
-  const handleSearch = async () => {
-    if (!query.trim()) return;
-    setSearching(true);
-    const results = await searchUsers(query);
-    setSearchResults(results ?? []); // open the dropdown
-    setSearching(false);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleSearch();
-  };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-8">
-        <div className="flex justify-between">
-          <h1 className="text-3xl font-bold mb-6">Welcome to Chat App! 🎉</h1>
-          <div className="relative flex gap-2 items-center">
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Search users..."
-              className="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-            <button
-              onClick={handleSearch}
-              disabled={searching}
-              className="bg-blue-500 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-600 disabled:opacity-50"
-            >
-              {searching ? "..." : "Search"}
-            </button>
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-8">
+      {/* Navbar / Header Area */}
+      <Navbar />
 
-            <SearchUser
-              users={searchResults}
-              onClose={() => setSearchResults(null)}
-              API_URL={API_URL}
-              onUserClick={(targetUser) => {
-                router.push(`/chat?with=${targetUser.userId}&username=${targetUser.username}`)
-              }}
-            />
-          </div>
-        </div>
+      {/* Main Feed Content */}
+      <div className="max-w-4xl mx-auto">
         {uploadError && (
-          <p className="text-sm text-red-600 mt-2">{uploadError}</p>
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm flex items-center">
+            <span className="font-semibold mr-2">Error:</span> {uploadError}
+          </div>
         )}
 
-        <div className="flex justify-between">
-          <UserInfo user={user} changePassword={changePassword} />
-          <ProfilePicture
-            user={user}
-            uploading={uploading}
-            uploadedUrl={uploadedUrl}
-            fileInputRef={fileInputRef}
-            fileUpload={fileUpload}
-            deleteProfilePicture={deleteProfilePicture}
-            API_URL={API_URL}
-          />
-        </div>
-
-        <div className="mb-6">
-          <div className="flex gap-4 mb-4">
-            <button
-              onClick={(e) => handleCreatePost(user.role)}
-              className={`px-6 py-2 rounded ${"bg-green-500 text-white hover:bg-green-600"}`}
-              title={
-                user?.role !== "admin" ? "Only admins can create posts" : ""
-              }
-            >
-              {postInput ? "Cancel" : "Create Post"}
-            </button>
-            <button
-              onClick={() => router.push("/chat")}
-              className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
-            >
-              Go to Chat
-            </button>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600"
-            >
-              Logout
-            </button>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="mb-6 border-b border-gray-100 pb-4">
+            <h2 className="text-xl font-bold text-gray-800">Global Feed</h2>
+            <p className="text-sm text-gray-500 mt-1">
+              See what's happening across ChatPat.
+            </p>
           </div>
 
-          <PostInput
-            postInput={postInput}
-            postData={postData}
-            setPostData={setPostData}
-            uploading={uploading}
-            setSelectedCategories={setSelectedCategories}
-            selectedCategories={selectedCategories}
-            handleSubmitPost={handleSubmitPost}
-            handleCreatePost={handleCreatePost}
-            textareaRef={textareaRef}
-            postImage={postImage}
-            setPostImage={setPostImage}
-            fileInputRef={fileInputRef}
-          />
-        </div>
-        <div className="flex gap-4 mb-6 border-b border-gray-200">
-          <button
-            onClick={() => setMyPost(true)}
-            className={`px-6 py-3 font-medium transition-colors duration-200 border-b-2 ${
-              myPost
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            My Posts
-          </button>
-          <button
-            onClick={() => setMyPost(false)}
-            className={`px-6 py-3 font-medium transition-colors duration-200 border-b-2 ${
-              !myPost
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            All Posts
-          </button>
-        </div>
-        {myPost ? (
-          <MyPostsList
-            user={user}
-            posts={myPosts}
-            usePostComment={usePostComment}
-            useComments={useComments}
-            handleDeletePost={handleDeletePost}
-            currentPage={myPostsPage}
-            totalPages={myPostsTotalPages}
-            setCurrentPage={setMyPostsPage}
-            handleLikePost={handleLikePost}
-            deleteComment={deleteComment}
-          />
-        ) : (
           <AllPosts
             user={user}
             posts={allPosts}
@@ -214,7 +69,7 @@ export default function Dashboard() {
             handleLikePost={handleLikePost}
             deleteComment={deleteComment}
           />
-        )}
+        </div>
       </div>
     </div>
   );
