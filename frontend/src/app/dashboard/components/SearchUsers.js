@@ -16,7 +16,7 @@ export default function SearchUser({ users, onClose, API_URL, onUserClick }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-  console.log(users);
+  // console.log(users);
   if (!users) return null;
 
   return (

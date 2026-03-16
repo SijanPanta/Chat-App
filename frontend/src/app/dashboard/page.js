@@ -3,7 +3,7 @@
 import { useDashboard } from "./hooks/useDashboard";
 import AllPosts from "./components/AllPosts";
 import Navbar from "@/components/Navbar";
-
+import PostInput from "./components/PostInput";
 export default function Dashboard() {
   const {
     user,
@@ -19,6 +19,18 @@ export default function Dashboard() {
     useComments,
     usePostComment,
     deleteComment,
+    postInput,
+    postData,
+    setPostData,
+    uploading,
+    setSelectedCategories,
+    selectedCategories,
+    handleSubmitPost,
+    handleCreatePost,
+    textareaRef,
+    postImage,
+    setPostImage,
+    fileInputRef,
   } = useDashboard();
 
   if (error) return null;
@@ -50,13 +62,25 @@ export default function Dashboard() {
         )}
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="mb-6 border-b border-gray-100 pb-4">
-            <h2 className="text-xl font-bold text-gray-800">Global Feed</h2>
-            <p className="text-sm text-gray-500 mt-1">
-              See what's happening across ChatPat.
-            </p>
+          <PostInput
+          className="mb-5"
+              postInput={postInput}
+              postData={postData}
+              setPostData={setPostData}
+              uploading={uploading}
+              setSelectedCategories={setSelectedCategories}
+              selectedCategories={selectedCategories}
+              handleSubmitPost={handleSubmitPost}
+              handleCreatePost={handleCreatePost}
+              textareaRef={textareaRef}
+              postImage={postImage}
+              setPostImage={setPostImage}
+              fileInputRef={fileInputRef}
+            />
+         
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100  animate-in fade-in slide-in-from-top-4 duration-300">
+            
           </div>
-
           <AllPosts
             user={user}
             posts={allPosts}

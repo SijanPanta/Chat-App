@@ -7,7 +7,7 @@ export default function PostList({
   posts,
   handleDeletePost,
   handleLikePost,
-  title,
+  title ,
   currentPage,
   totalPages,
   setCurrentPage,
@@ -119,9 +119,9 @@ export default function PostList({
       {/* Filter & Header Bar */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8 bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
         <div className="flex-1">
-          <h2 className="text-2xl font-bold text-gray-800 tracking-tight mb-1">
-            {title}
-          </h2>
+          <h1 className="text-2xl font-bold text-gray-800 tracking-tight mb-1">
+            {title()}
+          </h1>
           <div className="flex items-center text-sm font-medium text-gray-500">
             <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
             {filteredPosts && filteredPosts.length > 0

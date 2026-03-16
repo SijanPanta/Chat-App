@@ -12,6 +12,17 @@ export default function AllPostsList({
   deleteComment,
   handleDeletePost,
 }) {
+  const titleForall = () => {
+    return (
+      <div className="mb-6 border-b border-gray-100 mt-5 pb-4">
+        <h2 className="text-xl font-bold text-gray-800">Global Feed</h2>
+        <p className="text-sm text-gray-500 mt-1">
+          See what's happening across ChatPat.
+        </p>
+      </div>
+
+    )
+  }
   return (
     <PostList
       user={user}
@@ -21,7 +32,7 @@ export default function AllPostsList({
       useComments={useComments}
       handleLikePost={handleLikePost}
       posts={posts}
-      title="All Posts"
+      title={titleForall}
       currentPage={currentPage}
       totalPages={totalPages}
       setCurrentPage={setCurrentPage}

@@ -6,7 +6,6 @@ export default function registerMessageHandlers(io, socket) {
   socket.on('send_message', async (data, callback) => {
     try {
       console.log(`Message received from ${socket.id}:`, data);
-     
       const { roomId, message } = data;
 
       // 1. Save to database using chatService
@@ -33,6 +32,7 @@ export default function registerMessageHandlers(io, socket) {
   // Handle joining a room
   socket.on('join_room', (roomId) => {
     socket.join(roomId);
+    console.log("===================================",roomId)
     console.log(`User ${socket.id} joined room ${roomId}`);
   });
 

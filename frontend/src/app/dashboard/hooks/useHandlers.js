@@ -22,6 +22,7 @@ export function useHandlers(queryClient, user, uiState, router) {
     setPostData,
     setPostInput,
     selectedCategories,
+    setSelectedCategories
   } = uiState;
 
   const handleLogout = async () => {
@@ -99,6 +100,7 @@ export function useHandlers(queryClient, user, uiState, router) {
       );
     } finally {
       setUploading(false);
+      setSelectedCategories("")
     }
   };
 
@@ -187,7 +189,6 @@ export function useHandlers(queryClient, user, uiState, router) {
       }
       const users = await searchUser(query);
       return users;
-      console.log(user);
     } catch (err) {
       console.error(err.message);
     }

@@ -9,7 +9,7 @@ import { useDashboard } from "@/app/dashboard/hooks/useDashboard";
 
 export default function Navbar() {
   const router = useRouter();
-  const { handleLogout,user,API_URL } = useDashboard();
+  const { handleLogout, user, API_URL } = useDashboard();
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState(null);
   const [searching, setSearching] = useState(false);
@@ -32,7 +32,13 @@ export default function Navbar() {
     setSearching(true);
     try {
       const results = await searchUser(query);
-      setSearchResults(results ?? []);
+
+      // Filter out the current logged-in user from the search results
+      const filteredResults = (results ?? []).filter(
+        (searchedUser) => searchedUser.userId !== user?.userId,
+      );
+
+      setSearchResults(filteredResults);
     } catch (error) {
       console.error("Search failed:", error);
       setSearchResults([]);
@@ -43,10 +49,8 @@ export default function Navbar() {
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleSearch();
   };
-;
-
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6 sticky top-4 z-40">
+    <div className="max-w-4xl mx-auto bg-white/80 rounded-xl shadow-sm border border-gray-100 p-4  mb-6 sticky top-4 z-40">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1
           className="text-2xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent cursor-pointer"

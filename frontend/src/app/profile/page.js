@@ -76,7 +76,7 @@ export default function ProfilePage() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10 relative">
           {/* Back Button */}
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push('/dashboard')}
             className="group flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-blue-600 transition-colors mb-6"
           >
             <ArrowLeftIcon className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />

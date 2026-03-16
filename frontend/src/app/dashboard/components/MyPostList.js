@@ -12,6 +12,11 @@ export default function MyPostList({
   usePostComment,
   deleteComment,
 }) {
+  const titleForMe = () => {
+    return (
+      <p>My Posts</p>
+    )
+  }
   return (
     <PostList
       deleteComment={deleteComment}
@@ -20,7 +25,7 @@ export default function MyPostList({
       usePostComment={usePostComment}
       useComments={useComments}
       posts={posts}
-      title="My Posts"
+      title={titleForMe}
       handleDeletePost={handleDeletePost}
       currentPage={currentPage}
       totalPages={totalPages}
