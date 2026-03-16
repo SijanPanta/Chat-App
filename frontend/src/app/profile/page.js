@@ -7,6 +7,7 @@ import {
   ChatBubbleLeftRightIcon,
   PencilSquareIcon,
   ArrowRightOnRectangleIcon,
+  KeyIcon,
 } from "@heroicons/react/24/outline";
 import { useDashboard } from "../dashboard/hooks/useDashboard";
 import ProfilePicture from "../dashboard/components/ProfilePicture";
@@ -148,6 +149,14 @@ export default function ProfilePage() {
                 >
                   <ChatBubbleLeftRightIcon className="w-5 h-5" />
                   Go to Chat
+                </button>
+
+                <button
+                  onClick={() => router.push("/password")}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 shadow-sm transition-colors"
+                >
+                  <KeyIcon className="w-5 h-5 text-gray-500" />
+                  Change Password
                 </button>
 
                 <button
