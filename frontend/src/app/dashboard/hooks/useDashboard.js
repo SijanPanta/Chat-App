@@ -78,7 +78,8 @@ export function useDashboard() {
     handleLikePost: handlers.handleLikePost,
     usePostComment: handlers.usePostComment,
     deleteComment: handlers.deleteComment,
-    searchUsers:handlers.searchUsers,
+    searchUsers: handlers.searchUsers,
+    handleDeleteAccount: handlers.handleDeleteAccount,
     // Router
     router,
 

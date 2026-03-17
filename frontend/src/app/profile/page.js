@@ -47,6 +47,7 @@ export default function ProfilePage() {
     postImage,
     setPostImage,
     handleLogout,
+    handleDeleteAccount,
   } = useDashboard();
 
   if (isLoading) {
@@ -165,6 +166,12 @@ export default function ProfilePage() {
                 >
                   <ArrowRightOnRectangleIcon className="w-5 h-5" />
                   Logout
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-colors md:ml-auto"
+                >
+                  Delete Account
                 </button>
               </div>
             </div>

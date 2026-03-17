@@ -17,7 +17,7 @@ export default function AllPostsList({
       <div className="mb-6 border-b border-gray-100 mt-5 pb-4">
         <h2 className="text-xl font-bold text-gray-800">Global Feed</h2>
         <p className="text-sm text-gray-500 mt-1">
-          See what's happening across ChatPat.
+          See what's happening across Guff-Gaff.
         </p>
       </div>
 

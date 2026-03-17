@@ -32,7 +32,6 @@ export default function registerMessageHandlers(io, socket) {
   // Handle joining a room
   socket.on('join_room', (roomId) => {
     socket.join(roomId);
-    console.log("===================================",roomId)
     console.log(`User ${socket.id} joined room ${roomId}`);
   });
 

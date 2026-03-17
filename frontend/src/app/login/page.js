@@ -43,7 +43,7 @@ export default function LoginPage() {
       <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-white/50 w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            ChatPat
+            Guff-Gaff
           </h1>
           <p className="text-gray-500 mt-2">Welcome back! Please login to continue.</p>
         </div>

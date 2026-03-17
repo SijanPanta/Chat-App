@@ -8,6 +8,7 @@ import {
   postComment,
   deleteCommentById,
   searchUser,
+  deleteAccount
 } from "@/lib/api";
 
 export function useHandlers(queryClient, user, uiState, router) {
@@ -193,13 +194,24 @@ export function useHandlers(queryClient, user, uiState, router) {
       console.error(err.message);
     }
   };
+  
+  const handleDeleteAccount = async () => {
+    try {
+      const result = await deleteAccount(user.userId);
+      const { success } = result;
+      if (success) {
+        router.push("/login");
+      }
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
 
   return {
     API_URL,
     handleLogout,
     changePassword,
     fileUpload,
-    // handleCreatePost,
     handleSubmitPost,
     deleteProfilePicture,
     handleDeletePost,
@@ -207,5 +219,6 @@ export function useHandlers(queryClient, user, uiState, router) {
     usePostComment,
     deleteComment,
     searchUsers,
+    handleDeleteAccount,
   };
 }

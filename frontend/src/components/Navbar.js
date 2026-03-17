@@ -56,7 +56,7 @@ export default function Navbar() {
           className="text-2xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent cursor-pointer"
           onClick={() => router.push("/dashboard")}
         >
-          ChatPat
+          Guff-Gaff
         </h1>
 
         <div className="flex items-center gap-4 w-full sm:w-auto">

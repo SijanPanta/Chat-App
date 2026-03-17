@@ -22,3 +22,8 @@ export async function searchUser(query) {
   const response = await api.get(`/api/users/search-user?q=${query}`)
   return response.data;
 }
+
+export async function deleteAccount(userId) {
+  await api.delete(`/api/users/${userId}`);
+  return { success: true };
+}

@@ -1,4 +1,5 @@
 import * as authService from "../services/authService.js";
+import { publishEvent } from "../utils/rabbitmq.js";
 
 // Called by the main app whenever a user's data is mutated
 // Clears the Redis cache for that user so stale data is not served
@@ -29,15 +30,20 @@ export const register = async (req, res) => {
     );
     const token = authService.generateToken(newUser.userId);
 
+    const userData = {
+      userId: newUser.userId,
+      username: newUser.username,
+      email: newUser.email,
+      role: newUser.role,
+    };
+
+    // 📩 Publish the event to RabbitMQ
+    await publishEvent("user.registered", userData);
+
     res.status(201).json({
       message: "User registered successfully",
       token,
-      user: {
-        userId: newUser.userId,
-        username: newUser.username,
-        email: newUser.email,
-        role: newUser.role,
-      },
+      user: userData,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
