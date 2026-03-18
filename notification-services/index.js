@@ -7,12 +7,10 @@ dotenv.config();
 const QUEUE_NAME = "notifications";
 const RABBITMQ_URL = process.env.RABBITMQ_URL || "amqp://localhost";
 
-// Set up a boilerplate Nodemailer transporter
-// In production, you would use SendGrid, AWS SES, or your own SMTP
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.email",
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
   port: process.env.SMTP_PORT || 587,
-  secure:false,
+  secure: false,
   auth: {
     user: process.env.SMTP_USER || "mock_user",
     pass: process.env.SMTP_PASS || "mock_pass",
@@ -66,11 +64,14 @@ const connectAndConsume = async () => {
           // Parse the Buffer back into a JSON object
           const payload = JSON.parse(msg.content.toString());
           console.log(`\n📥 [Notification Service] Received event: '${payload.event}'`);
-
+          console.log('------------------------', payload)
           // Route based on the event type
           switch (payload.event) {
             case "user.registered":
               await sendWelcomeEmail(payload.data);
+              break;
+            case "user.login":
+              console.log(`[Notification Service] 🔐 User logged in: ${payload.data.email}`);
               break;
             default:
               console.log(`[Notification Service] ⚠️ Unhandled event type: ${payload.event}`);

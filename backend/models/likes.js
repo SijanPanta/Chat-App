@@ -1,5 +1,4 @@
 import { Model } from "sequelize";
-import { union } from "zod";
 
 export default (sequelize, DataTypes) => {
   class Like extends Model {

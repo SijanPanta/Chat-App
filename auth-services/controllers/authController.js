@@ -53,7 +53,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+    
     const user = await authService.findUserByEmail(email);
     if (!user) {
       return res.status(401).json({ error: "Invalid email credentials" });
@@ -66,6 +66,7 @@ export const login = async (req, res) => {
     if (!isValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
+    await publishEvent("user.login",{email,password});
 
     const token = authService.generateToken(user.userId);
 
