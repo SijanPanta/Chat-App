@@ -58,15 +58,17 @@ export function usePostData(pagination) {
   const { data: myPosts = [] } = useQuery({
     queryKey: ["myPosts", user?.userId, myPostsPage],
     queryFn: async () => {
-      const postsPerPage = 20;
+      const postsPerPage = 10;
       const response = await getUserPosts(
         user?.userId,
         myPostsPage,
         postsPerPage,
       );
-      const totalPosts = response.posts.count;
-      setMyPostsTotalPages(Math.ceil(totalPosts / postsPerPage));
-      return response.posts.rows;
+      
+      const totalPosts = response?.posts?.count || 0;
+      const totalPages = Math.ceil(totalPosts / postsPerPage);
+      setMyPostsTotalPages(totalPages > 0 ? totalPages : 1);
+      return response?.posts?.rows || [];
     },
     enabled: !!user?.userId,
     keepPreviousData: true,
@@ -74,11 +76,12 @@ export function usePostData(pagination) {
   const { data: allPosts = [] } = useQuery({
     queryKey: ["allPosts", allPostsPage],
     queryFn: async () => {
-      const postsPerPage = 20;
+      const postsPerPage = 10;
       const response = await getAllPosts(allPostsPage, postsPerPage);
-      const totalPosts = response.posts.count;
-      setAllPostsTotalPages(Math.ceil(totalPosts / postsPerPage));
-      return response.posts.rows;
+      const totalPosts = response?.count || 0;
+      const totalPages = Math.ceil(totalPosts / postsPerPage);
+      setAllPostsTotalPages(totalPages > 0 ? totalPages : 1);
+      return response?.posts?.rows || [];
     },
     keepPreviousData: true,
   });

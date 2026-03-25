@@ -101,7 +101,7 @@ export function useHandlers(queryClient, user, uiState, router) {
       );
     } finally {
       setUploading(false);
-      setSelectedCategories("")
+      setSelectedCategories([])
     }
   };
 

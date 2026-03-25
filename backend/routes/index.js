@@ -16,14 +16,14 @@ router.use("/auth", async (req, res) => {
           Authorization: req.headers.authorization,
         }),
       },
-      body: ["GET","POST", "PUT", "PATCH"].includes(req.method)
+      body: ["POST", "PUT", "PATCH"].includes(req.method)
         ? JSON.stringify(req.body)
         : undefined,
     });
     const data = await response.json();
     res.status(response.status).json(data);
-  } catch {
-    res.status(503).json({ error: "Auth service unavailable" });
+  } catch(err) {
+    res.status(503).json({ error: err.message });
   }
 });
 

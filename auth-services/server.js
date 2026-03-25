@@ -4,6 +4,7 @@ import app from "./app.js";
 import { connectRabbitMQ } from "./utils/rabbitmq.js";
 import db from "./models/index.js";
 import { connectRedis } from "./config/redis.js";
+import { startGrpcServer } from "./grpcServer.js";
 
 const PORT = process.env.AUTH_SERVICE_PORT || 4000;
 const server = http.createServer(app);
@@ -36,6 +37,9 @@ server.listen(PORT, async () => {
 
     // Connect RabbitMQ after DB and Redis are successfully connected
     await connectRabbitMQ();
+
+    // Start gRPC server
+    await startGrpcServer();
   } catch (error) {
     console.error("❌ [auth-services] Error starting services:", error);
   }

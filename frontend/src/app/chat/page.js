@@ -37,7 +37,7 @@ export default function ChatPage() {
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("No token found. User might not be logged in.");
-      // Optional: Add routing to redirect to login page here
+      router.push("/login");
       return;
     }
 

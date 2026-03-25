@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package user;
+
+service UserService {
+  // rpc GetUserById(GetUserByIdRequest) returns (User);
+  rpc ClearUserCache(ClearCacheRequest) returns (ClearCacheResponse);
+  rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse);
+}
+
+// message GetUserByIdRequest {
+//   string user_id = 1;
+// }
+
+message ClearCacheRequest {
+  string user_id = 1;
+}
+
+message ClearCacheResponse {
+  bool success = 1;
+}
+
+message VerifyTokenRequest {
+  string token = 1;
+}
+
+message VerifyTokenResponse {
+  bool valid = 1;
+  User user = 2;
+}
+
+message User {
+  string user_id = 1;
+  string username = 2;
+  string email = 3;
+  string password_hash = 4;
+  string role = 5;
+  string avatar = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}

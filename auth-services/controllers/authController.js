@@ -35,7 +35,10 @@ export const register = async (req, res) => {
       username: newUser.username,
       email: newUser.email,
       role: newUser.role,
+      profilePicture: null,
     };
+
+    await authService.cacheUser(userData);
 
     // 📩 Publish the event to RabbitMQ
     await publishEvent("user.registered", userData);
@@ -69,6 +72,16 @@ export const login = async (req, res) => {
     await publishEvent("user.login",{email,password});
 
     const token = authService.generateToken(user.userId);
+
+    const userData = {
+      userId: user.userId,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      profilePicture: user.profilePicture || null,
+    };
+
+    await authService.cacheUser(userData);
 
     res.status(200).json({
       message: "Login successful",

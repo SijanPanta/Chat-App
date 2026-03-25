@@ -1,15 +1,11 @@
 import bcrypt from "bcrypt";
 import * as userService from "../services/userService.js";
+import { clearUserCache as clearCacheGrpc } from "../lib/grpcClient.js";
 
-// Calls auth-service to clear the Redis cache for a user
-// Must be called after any mutation to the user's data
 const clearUserCache = async (userId) => {
   try {
-    await fetch(`${process.env.AUTH_SERVICE_URL}/auth/cache/${userId}`, {
-      method: "DELETE",
-    });
+    await clearCacheGrpc(userId);
   } catch (err) {
-    // Cache clearing failure should never break the main operation
     console.error("Failed to clear user cache:", err.message);
   }
 };

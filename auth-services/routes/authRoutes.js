@@ -4,7 +4,9 @@ import validate from "../middlewares/validate.js";
 import { registerSchema, loginSchema } from "../schemas/schema.js";
 
 const router = express.Router();
-
+router.get("/health", (req, res) => {
+  res.json({ status: "OK" });
+});
 router.post("/register", validate(registerSchema), authController.register);
 router.post("/login", validate(loginSchema), authController.login);
 router.post("/logout", authController.logout);

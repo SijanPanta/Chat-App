@@ -17,7 +17,8 @@ export default function PostList({
 }) {
   const [categories, setCategories] = useState([]);
   const [filteredPosts, setFilteredPost] = useState(posts);
-
+  const validPosts = filteredPosts.filter(Boolean);
+  
   useEffect(() => {
     setFilteredPost(posts);
   }, [posts]);
@@ -124,9 +125,9 @@ export default function PostList({
           </h1>
           <div className="flex items-center text-sm font-medium text-gray-500">
             <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
-            {filteredPosts && filteredPosts.length > 0
-              ? `Showing ${filteredPosts.length} post${
-                  filteredPosts.length !== 1 ? "s" : ""
+            {validPosts.length > 0
+              ? `Showing ${validPosts.length} post${
+                  validPosts.length !== 1 ? "s" : ""
                 }`
               : "No posts available"}
           </div>
@@ -155,8 +156,8 @@ export default function PostList({
 
       {/* Posts List */}
       <div className="space-y-6">
-        {filteredPosts && filteredPosts.length > 0 ? (
-          filteredPosts.map((post) => (
+        {validPosts.length > 0 ? (
+          validPosts.map((post) => (
             <div
               key={post.postId}
               className="animate-in fade-in slide-in-from-bottom-4 duration-500"

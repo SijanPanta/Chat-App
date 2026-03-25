@@ -62,6 +62,11 @@ export const clearUserCache = async (userId) => {
   await redisClient.del(`user:${userId}`);
 };
 
+export const cacheUser = async (user) => {
+  const cacheKey = `user:${user.userId}`;
+  await redisClient.setEx(cacheKey, USER_CACHE_TTL, JSON.stringify(user));
+};
+
 // Called by GET /auth/verify — used by the main app's authenticate middleware
 export const verifyAndGetUser = async (token) => {
   // 1. Blacklist check

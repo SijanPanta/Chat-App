@@ -12,10 +12,7 @@ const verifyTokenViaRedis = async (token) => {
   const isBlacklisted = await redisClient.get(`blacklist:${token}`);
   if (isBlacklisted) return null;
 
-  // 2. Verify JWT signature and expiry
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-  // 3. Fetch user from Redis cache — auth-service writes "user:{userId}" on DB fetch
   const cached = await redisClient.get(`user:${decoded.userId}`);
   if (!cached) return null;
 
