@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 
 export default function Post({
   user,
@@ -26,7 +26,14 @@ export default function Post({
   const toggleComments = () => {
     setShowComments(!showComments);
   };
-
+  
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  
+  useEffect(() => {
+    console.log(post,user);
+  }, []);
+  
+  const currentImage = user?.profilePicture ? `${API_URL}${user.profilePicture}` : null;
   return (
     <div className="group bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg hover:border-blue-300 transition-all duration-300 overflow-hidden">
       <div className="flex justify-between items-start p-6">
@@ -48,10 +55,13 @@ export default function Post({
             </div>
           )}
 
-          {/* Post Meta Information */}
+          {/* Post Meta Information */}{
+          }
           <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mt-4">
             <div className="flex items-center gap-1.5">
-              <span className="text-blue-500">👤</span>
+              <span className="text-blue-500">
+                <img src={currentImage} alt="Profile" className="w-6 h-6 rounded-full" />
+              </span>
               <span className="font-medium text-gray-700">{post.userName}</span>
             </div>
             <span className="text-gray-300">•</span>

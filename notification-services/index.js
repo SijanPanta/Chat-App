@@ -33,10 +33,6 @@ const sendWelcomeEmail = async (userData) => {
     //   html: `<h3>Hi ${userData.username}!</h3><p>Welcome to ChatPat! We're thrilled to have you.</p>`,
     // });
     console.log(
-      `[Notification Service] Would have sent welcome email to: ${userData.email}`,
-    );
-    const info = { messageId: "mock-id-for-now" };
-    console.log(
       `[Notification Service] ✅ Email actually sent: ${info.messageId}`,
     );
 

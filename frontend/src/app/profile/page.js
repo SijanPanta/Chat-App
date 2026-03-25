@@ -128,7 +128,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-6 border-t border-gray-100">
+              <div className="flex  flex-wrap items-center justify-center  gap-3 pt-6 border-t border-gray-100">
                 <button
                   onClick={() => handleCreatePost(user.role)}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-colors ${
@@ -159,17 +159,16 @@ export default function ProfilePage() {
                   <KeyIcon className="w-5 h-5 text-gray-500" />
                   Change Password
                 </button>
-
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-colors md:ml-auto"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-colors "
                 >
                   <ArrowRightOnRectangleIcon className="w-5 h-5" />
                   Logout
                 </button>
                 <button
                   onClick={handleDeleteAccount}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-colors md:ml-auto"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-colors "
                 >
                   Delete Account
                 </button>

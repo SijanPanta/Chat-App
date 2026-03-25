@@ -55,7 +55,7 @@ export function usePostData(pagination) {
     }
   }, [error, router]);
 
-  const { data: myPosts = [] } = useQuery({
+  const { data: myPostsData = { rows: [], totalPages: 1 } } = useQuery({
     queryKey: ["myPosts", user?.userId, myPostsPage],
     queryFn: async () => {
       const postsPerPage = 10;
@@ -64,27 +64,46 @@ export function usePostData(pagination) {
         myPostsPage,
         postsPerPage,
       );
-      
-      const totalPosts = response?.posts?.count || 0;
+
+      let totalPosts = response?.posts?.count || 0;
+      if (Array.isArray(totalPosts)) totalPosts = totalPosts.length;
       const totalPages = Math.ceil(totalPosts / postsPerPage);
-      setMyPostsTotalPages(totalPages > 0 ? totalPages : 1);
-      return response?.posts?.rows || [];
+
+      return {
+        rows: response?.posts?.rows || [],
+        totalPages: totalPages > 0 ? totalPages : 1,
+      };
     },
     enabled: !!user?.userId,
-    keepPreviousData: true,
   });
-  const { data: allPosts = [] } = useQuery({
-    queryKey: ["allPosts", allPostsPage],
+
+  const { data: allPostsData = { rows: [], totalPages: 1 } } = useQuery({
+    queryKey: ["allPosts", allPostsPage], 
     queryFn: async () => {
       const postsPerPage = 10;
       const response = await getAllPosts(allPostsPage, postsPerPage);
-      const totalPosts = response?.count || 0;
+
+      let totalPosts = response?.posts?.count || response?.count || 0;
+      if (Array.isArray(totalPosts)) totalPosts = totalPosts.length;
       const totalPages = Math.ceil(totalPosts / postsPerPage);
-      setAllPostsTotalPages(totalPages > 0 ? totalPages : 1);
-      return response?.posts?.rows || [];
+
+      return {
+        rows: response?.posts?.rows || [],
+        totalPages: totalPages > 0 ? totalPages : 1,
+      };
     },
-    keepPreviousData: true,
   });
+
+  useEffect(() => {
+    setMyPostsTotalPages(myPostsData.totalPages);
+  }, [myPostsData.totalPages, setMyPostsTotalPages]);
+
+  useEffect(() => {
+    setAllPostsTotalPages(allPostsData.totalPages);
+  }, [allPostsData.totalPages, setAllPostsTotalPages]);
+
+  const myPosts = myPostsData.rows;
+  const allPosts = allPostsData.rows;
 
   return {
     user,

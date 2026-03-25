@@ -87,7 +87,9 @@ export default function Navbar() {
               }}
             />
           </div>
-
+          <button
+            className="px-5 py-2.5 rounded-xl font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+            onClick={() => router.push("/chat")}>Go to Chat</button>
           {/* Profile Dropdown Container */}
           <div className="relative" ref={dropdownRef}>
             <button

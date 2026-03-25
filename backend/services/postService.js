@@ -17,7 +17,7 @@ export const getAllPosts = async (offset, limit, currentUserId) => {
     offset: Number(offset),
     limit: Number(limit),
     distinct: true,
-    order: [["createdAt", "DESC"]],
+    order: [["createdAt", "ASC"]],
     include: [
       {
         model: Category,
@@ -56,7 +56,7 @@ export const getUserPosts = async (userId, offset, limit, currentUserId) => {
     offset: Number(offset),
     limit: Number(limit),
     distinct: true,
-    order: [["createdAt", "DESC"]],
+    order: [["createdAt", "ASC"]],
     where: { userId },
     include: [
       {
